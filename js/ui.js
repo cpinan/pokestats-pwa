@@ -79,23 +79,24 @@ function buildEVInputs(containerId = 'ev-inputs', prefix='ev') {
 }
 
 function syncEV(i, val, prefix) {
-  val = Math.round(val);
+  val = Math.round(Math.max(0, val || 0));
 
   if (prefix === 'ev' && state.gen > 2) {
     const EV_MAX_TOTAL = 510;
-    const EV_MAX_STAT  = 252;
-    // Clamp to per-stat max first
-    val = Math.min(val, EV_MAX_STAT);
-    // Then clamp so total doesn't exceed 510
+    // Clamp to per-stat max
+    val = Math.min(val, 252);
+    // Sum all OTHER slots (not the one being changed)
     const usedByOthers = state.evs.reduce((sum, v, idx) => idx === i ? sum : sum + v, 0);
-    const remaining = EV_MAX_TOTAL - usedByOthers;
-    if (val > remaining) val = Math.max(0, remaining);
+    // How much room is left after the other 5 stats
+    val = Math.min(val, Math.max(0, EV_MAX_TOTAL - usedByOthers));
   }
 
   if (prefix === 'ev') {
-    state.evs[i] = val;
+    state.evs[i] = val;  // write clamped value before recalculating caps
     updateEVTotal();
   }
+
+  // Reflect the (possibly clamped) value back into both inputs
   const r = document.getElementById(prefix + '-range-' + i);
   const n = document.getElementById(prefix + '-num-'   + i);
   if (r && +r.value !== val) r.value = val;
@@ -108,16 +109,17 @@ function updateEVTotal() {
   const el = document.getElementById('ev-total');
   if (el) {
     el.textContent = `${total} / ${max}`;
+    // Gold when full, muted when not
     el.style.color = total >= max ? 'var(--accent)' : 'var(--text2)';
   }
-  // Update slider max hints — grey out sliders that have no remaining budget
+  // Dynamically cap each slider/number so the browser enforces the remaining budget
   if (state.gen > 2) {
     const remaining = max - total;
     for (let j = 0; j < 6; j++) {
+      // This stat can go up to: its current value + whatever budget is left
+      const cap = Math.min(252, state.evs[j] + remaining);
       const r = document.getElementById('ev-range-' + j);
       const n = document.getElementById('ev-num-'   + j);
-      const headroom = state.evs[j] + remaining;
-      const cap = Math.min(252, headroom);
       if (r) r.max = cap;
       if (n) n.max = cap;
     }
