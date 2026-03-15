@@ -4,8 +4,9 @@
 // ─────────────────────────────────────────────────────
 
 // State is declared in data.js
+let _initSilent = false; // suppress result panel during startup
 
-function calculate() {
+function calculate(scroll = false, silent = false) {
   const level = state.level;
   const gen = state.gen;
 
@@ -27,7 +28,7 @@ function calculate() {
   const allStats = [{ name:'HP', full:'HP', value:hp, mult:1.0, color:'#e84393' }, ...results];
   const total = allStats.reduce((a, s) => a + s.value, 0);
 
-  document.getElementById('result-section').style.display = 'block';
+  if (!silent) document.getElementById('result-section').style.display = 'block';
 
   const genLabels = {1:'GEN I',2:'GEN II',3:'GEN III–V',6:'GEN VI+'};
   document.getElementById('result-gen').textContent = genLabels[gen] || 'GEN III';
@@ -57,7 +58,7 @@ function calculate() {
   // Breakdown
   buildBreakdown(allStats, level, gen);
 
-  document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
+  if (scroll && !silent) document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
 function buildBreakdown(allStats, level, gen) {
@@ -305,8 +306,10 @@ function init() {
   document.getElementById('lang-select').value = currentLang;
   applyTranslations();
 
-  // Load Garchomp as default
+  // Load Garchomp as default (silent — don't show results panel on startup)
+  _initSilent = true;
   loadPreset('garchomp');
+  _initSilent = false;
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('sw.js').catch(()=>{});

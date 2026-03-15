@@ -3,6 +3,7 @@
 > A fast, offline-ready Progressive Web App for calculating Pokémon stats across all generations — with full i18n support.
 
 ### 🌐 [Live Demo → cpinan.github.io/pokestats-pwa](https://cpinan.github.io/pokestats-pwa/)
+### 🧪 [Run Tests → cpinan.github.io/pokestats-pwa/tests/index.html](https://cpinan.github.io/pokestats-pwa/tests/index.html)
 
 [![Live](https://img.shields.io/badge/Live-Demo-brightgreen?logo=github)](https://cpinan.github.io/pokestats-pwa/)
 [![PWA](https://img.shields.io/badge/PWA-ready-blueviolet?logo=googlechrome)](#pwa-installation)
@@ -191,12 +192,25 @@ That's it — three steps, one new file, two one-line edits.
 
 ## 🧪 Running Tests
 
+**Live:** [cpinan.github.io/pokestats-pwa/tests/index.html](https://cpinan.github.io/pokestats-pwa/tests/index.html)
+
+**Locally:**
 ```bash
 python3 -m http.server 8080
 # → open http://localhost:8080/tests/index.html
 ```
 
-~70 test cases covering formulas (Gen I/II + III+), all 25 natures, data integrity (1,025 Pokémon), i18n completeness, DOM element presence, and integration tests for `calculate()`, language switching, and dropdown filtering.
+~80 test cases across:
+
+| Suite | What's covered |
+|---|---|
+| **Formulas** | `calcHP` / `calcStat` for Gen I/II and III+ with known values (Blissey, Garchomp, Shedinja…) |
+| **Nature multipliers** | All 25 natures · boosted, reduced, neutral · all 5 stats |
+| **Data integrity** | 1,025 Pokémon (unique IDs, lowercase names) · 25 natures · all presets |
+| **i18n** | `registerLocale` · `t()` fallback · `tStat()` / `tNature()` · ES completeness |
+| **EV 510 cap** | Single stat cap (252) · total cap (510) · presets · Gen I/II bypass |
+| **DOM** | ~30 required element IDs · IV/EV slider+number input pairs · initial state |
+| **Integration** | `calculate()` output · Blissey HP formula end-to-end · language switch · dropdown filter |
 
 ---
 

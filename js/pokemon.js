@@ -185,7 +185,7 @@ function loadPreset(key) {
   document.getElementById('search-clear').style.display = 'block';
   updateTypeBadges(p.types);
   loadSprite(p.num);
-  calculate();
+  calculate(false, typeof _initSilent !== 'undefined' && _initSilent);
 }
 
 function updateTypeBadges(types) {

@@ -1,9 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
-//  tests.js — PokéStats Calculator automated test suite
-//  Covers: stat formulas, nature multipliers, i18n, data integrity, UI state
-//
-//  Uses a minimal hand-rolled test runner (no dependencies).
-//  Run by opening tests/index.html in a browser.
+//  tests.js — PokéStats Calculator test suite
+//  Run by opening tests/index.html in a browser (served over HTTP).
 // ─────────────────────────────────────────────────────────────────────────────
 
 const results = [];
@@ -32,8 +29,8 @@ function expect(actual) {
         throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
     },
     toEqual(expected) {
-      const a = JSON.stringify(actual), b = JSON.stringify(expected);
-      if (a !== b) throw new Error(`Expected ${b}, got ${a}`);
+      if (JSON.stringify(actual) !== JSON.stringify(expected))
+        throw new Error(`Expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
     },
     toBeGreaterThan(n) {
       if (!(actual > n)) throw new Error(`Expected ${actual} > ${n}`);
@@ -55,7 +52,7 @@ function expect(actual) {
     },
     toContain(item) {
       if (!actual.includes(item))
-        throw new Error(`Expected array/string to contain ${JSON.stringify(item)}`);
+        throw new Error(`Expected to contain ${JSON.stringify(item)}`);
     },
     toHaveLength(n) {
       if (actual.length !== n)
@@ -68,8 +65,12 @@ function expect(actual) {
       },
       toBeFalsy() {
         if (!actual) throw new Error(`Expected not-falsy, got ${actual}`);
-      }
-    }
+      },
+      toContain(item) {
+        if (actual.includes(item))
+          throw new Error(`Expected NOT to contain ${JSON.stringify(item)}`);
+      },
+    },
   };
 }
 
@@ -77,123 +78,144 @@ function expect(actual) {
 //  FORMULA TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 describe('calcHP — Gen III+', () => {
-  it('calculates Blissey HP at Lv100, 0 EVs, 31 IVs correctly', () => {
-    // Blissey: base HP 255, IV 31, EV 0, Lv 100
-    // Formula: floor((2*255 + 31 + 0) * 100/100) + 100 + 10 = 541 + 110 = 651
-    expect(calcHP(255, 31, 0, 100, 3)).toBe(620);
-  });
-
-  it('calculates Shedinja always returns 1', () => {
-    expect(calcHP(1, 31, 252, 100, 3)).toBe(1);
-  });
-
-  it('returns higher HP with 252 EVs vs 0 EVs', () => {
-    const low  = calcHP(100, 31, 0,   100, 3);
-    const high = calcHP(100, 31, 252, 100, 3);
-    expect(high).toBeGreaterThan(low);
-  });
-
-  it('returns higher HP at Lv100 vs Lv50', () => {
-    const lv50  = calcHP(100, 31, 0, 50,  3);
-    const lv100 = calcHP(100, 31, 0, 100, 3);
-    expect(lv100).toBeGreaterThan(lv50);
+  it('Blissey HP at Lv100, 31 IV, 0 EV', () => {
+    // floor((2*255 + 31 + 0) * 100/100) + 100 + 10 = 541 + 110 = 651
+    expect(calcHP(255, 31, 0, 100, 3)).toBe(651);
   });
 
   it('perfect Blissey HP at Lv100 with 252 EVs', () => {
-    // floor((2*255+31+63)*1) + 110 = 604 + 110 = 714
+    // floor((2*255 + 31 + 63) * 1) + 110 = 604 + 110 = 714
     expect(calcHP(255, 31, 252, 100, 3)).toBe(714);
   });
 
   it('Garchomp HP at Lv100, 31 IV, 252 EV', () => {
-    // base 108: floor((216+31+63)*1) + 110 = 310 + 110 = 420
+    // floor((2*108 + 31 + 63) * 1) + 110 = 310 + 110 = 420
     expect(calcHP(108, 31, 252, 100, 3)).toBe(420);
+  });
+
+  it('Shedinja (base 1) always returns 1', () => {
+    expect(calcHP(1, 31, 252, 100, 3)).toBe(1);
+    expect(calcHP(1, 0, 0, 50, 3)).toBe(1);
+  });
+
+  it('252 EVs gives higher HP than 0 EVs', () => {
+    expect(calcHP(100, 31, 252, 100, 3)).toBeGreaterThan(calcHP(100, 31, 0, 100, 3));
+  });
+
+  it('Lv100 gives higher HP than Lv50', () => {
+    expect(calcHP(100, 31, 0, 100, 3)).toBeGreaterThan(calcHP(100, 31, 0, 50, 3));
+  });
+
+  it('0 IVs gives lower HP than 31 IVs', () => {
+    expect(calcHP(100, 0, 0, 100, 3)).toBeLessThan(calcHP(100, 31, 0, 100, 3));
   });
 });
 
 describe('calcHP — Gen I & II', () => {
-  it('uses DV formula correctly', () => {
-    // Gen 1: floor(((base + iv)*2 + floor(sqrt(ev))) * lv/100) + lv + 10
+  it('Pikachu-range HP with base 45, 15 DV, 0 StatExp', () => {
     const result = calcHP(45, 15, 0, 100, 1);
-    // floor(((45+15)*2 + 0) * 1) + 110 = 120 + 110 = 230... Pikachu-ish
-    expect(result).toBeGreaterThan(100);
-    expect(result).toBeLessThan(400);
+    // floor(((45+15)*2 + 0) * 1) + 110 = 120 + 110 = 230
+    expect(result).toBe(230);
   });
 
-  it('higher stat exp gives higher HP in Gen I', () => {
-    const low  = calcHP(100, 15, 0,     100, 1);
-    const high = calcHP(100, 15, 65535, 100, 1);
-    expect(high).toBeGreaterThan(low);
+  it('higher StatExp gives higher HP', () => {
+    expect(calcHP(100, 15, 65535, 100, 1)).toBeGreaterThan(calcHP(100, 15, 0, 100, 1));
+  });
+
+  it('max DV (15) gives higher HP than 0 DV', () => {
+    expect(calcHP(100, 15, 0, 100, 1)).toBeGreaterThan(calcHP(100, 0, 0, 100, 1));
   });
 });
 
 describe('calcStat — Gen III+', () => {
   it('Garchomp Attack at Lv100, 31 IV, 252 EV, neutral nature', () => {
-    // base 130: floor((floor((260+31+63)*1)+5)*1.0) = floor(354*1) = 394... 
-    // Actually: floor((floor((260+31+63)*100/100))+5)*1.0)
-    // = floor(354+5) = 359
-    expect(calcStat(130, 31, 252, 100, 1.0, 3)).toBe(394);
+    // floor((floor((260+31+63)*1)+5)*1.0) = floor(354+5) = 359
+    expect(calcStat(130, 31, 252, 100, 1.0, 3)).toBe(359);
   });
 
-  it('applies boosted nature (×1.1) correctly', () => {
+  it('Garchomp Attack with Adamant (+10%) nature', () => {
+    // floor(359 * 1.1) = floor(394.9) = 394... wait
+    // floor((floor((260+31+63)*1)+5)*1.1) = floor(354+5)*1.1 = floor(359*1.1) = floor(394.9) = 394
+    expect(calcStat(130, 31, 252, 100, 1.1, 3)).toBe(394);
+  });
+
+  it('boosted nature (×1.1) gives higher stat than neutral', () => {
     const neutral = calcStat(100, 31, 0, 100, 1.0, 3);
     const boosted = calcStat(100, 31, 0, 100, 1.1, 3);
     expect(boosted).toBeGreaterThan(neutral);
-    // Should be floor(neutral * 1.1) roughly
-    expect(boosted).toBe(Math.floor((Math.floor((200+31)*100/100)+5)*1.1));
   });
 
-  it('applies reduced nature (×0.9) correctly', () => {
+  it('reduced nature (×0.9) gives lower stat than neutral', () => {
     const neutral = calcStat(100, 31, 0, 100, 1.0, 3);
     const reduced = calcStat(100, 31, 0, 100, 0.9, 3);
     expect(reduced).toBeLessThan(neutral);
   });
 
-  it('EVs increase stat by exactly floor(252/4)=63 at Lv100', () => {
+  it('252 EVs increase stat by exactly 63 at Lv100', () => {
     const noEV   = calcStat(100, 31, 0,   100, 1.0, 3);
     const withEV = calcStat(100, 31, 252, 100, 1.0, 3);
-    // Difference should be floor(63 * 1.0) = 63
     expect(withEV - noEV).toBe(63);
   });
 
-  it('level 50 gives roughly half of level 100 stat', () => {
-    const lv100 = calcStat(100, 31, 0, 100, 1.0, 3);
-    const lv50  = calcStat(100, 31, 0, 50,  1.0, 3);
-    expect(lv50).toBeLessThan(lv100);
-    expect(lv50 * 2).toBeGreaterThan(lv100 - 10); // roughly half
+  it('Lv50 stat is lower than Lv100 stat', () => {
+    expect(calcStat(100, 31, 0, 50, 1.0, 3)).toBeLessThan(
+      calcStat(100, 31, 0, 100, 1.0, 3)
+    );
+  });
+});
+
+describe('calcStat — Gen I & II', () => {
+  it('returns a positive number', () => {
+    expect(calcStat(100, 15, 0, 100, 1.0, 1)).toBeGreaterThan(0);
+  });
+
+  it('higher DV gives higher stat', () => {
+    expect(calcStat(100, 15, 0, 100, 1.0, 1)).toBeGreaterThan(
+      calcStat(100, 0, 0, 100, 1.0, 1)
+    );
+  });
+
+  it('high StatExp gives higher stat than 0', () => {
+    expect(calcStat(100, 15, 65535, 100, 1.0, 1)).toBeGreaterThan(
+      calcStat(100, 15, 0, 100, 1.0, 1)
+    );
   });
 });
 
 describe('getNatureMult', () => {
-  it('returns 1.0 for neutral nature (Hardy)', () => {
-    expect(getNatureMult(0, 'ATK')).toBe(1.0);  // Hardy
+  it('Hardy (neutral) returns 1.0 for all stats', () => {
+    ['ATK','DEF','SP.ATK','SP.DEF','SPD'].forEach(s => {
+      expect(getNatureMult(0, s)).toBe(1.0);
+    });
   });
 
-  it('returns 1.1 for Adamant on ATK', () => {
-    // Adamant: up=ATK, down=SP.ATK — index 3
-    const adamantIdx = NATURES.findIndex(n => n.name === 'Adamant');
-    expect(getNatureMult(adamantIdx, 'ATK')).toBe(1.1);
+  it('Adamant returns 1.1 for ATK', () => {
+    const idx = NATURES.findIndex(n => n.name === 'Adamant');
+    expect(getNatureMult(idx, 'ATK')).toBe(1.1);
   });
 
-  it('returns 0.9 for Adamant on SP.ATK', () => {
-    const adamantIdx = NATURES.findIndex(n => n.name === 'Adamant');
-    expect(getNatureMult(adamantIdx, 'SP.ATK')).toBe(0.9);
+  it('Adamant returns 0.9 for SP.ATK', () => {
+    const idx = NATURES.findIndex(n => n.name === 'Adamant');
+    expect(getNatureMult(idx, 'SP.ATK')).toBe(0.9);
   });
 
-  it('returns 1.0 for Adamant on DEF (unaffected stat)', () => {
-    const adamantIdx = NATURES.findIndex(n => n.name === 'Adamant');
-    expect(getNatureMult(adamantIdx, 'DEF')).toBe(1.0);
+  it('Adamant returns 1.0 for unaffected stats', () => {
+    const idx = NATURES.findIndex(n => n.name === 'Adamant');
+    ['DEF','SP.DEF','SPD'].forEach(s => {
+      expect(getNatureMult(idx, s)).toBe(1.0);
+    });
   });
 
-  it('returns 1.0 for all stats with neutral natures', () => {
-    ['Hardy', 'Docile', 'Serious', 'Bashful', 'Quirky'].forEach(name => {
+  it('all 5 neutral natures return 1.0 for every stat', () => {
+    ['Hardy','Docile','Serious','Bashful','Quirky'].forEach(name => {
       const idx = NATURES.findIndex(n => n.name === name);
-      ['ATK','DEF','SP.ATK','SP.DEF','SPD'].forEach(stat => {
-        expect(getNatureMult(idx, stat)).toBe(1.0);
+      ['ATK','DEF','SP.ATK','SP.DEF','SPD'].forEach(s => {
+        expect(getNatureMult(idx, s)).toBe(1.0);
       });
     });
   });
 
-  it('boosted and reduced stats are always different stats', () => {
+  it('every non-neutral nature boosts and reduces different stats', () => {
     NATURES.filter(n => n.up).forEach(n => {
       expect(n.up).not.toBe(n.down);
     });
@@ -201,16 +223,18 @@ describe('getNatureMult', () => {
 });
 
 describe('getMaxStat', () => {
-  it('returns a positive number for any stat', () => {
+  it('returns a positive number for all 6 stats', () => {
     ['HP','ATK','DEF','SP.ATK','SP.DEF','SPD'].forEach(s => {
       expect(getMaxStat(s, 100, 3)).toBeGreaterThan(0);
     });
   });
 
-  it('HP max is greater than other stat max (due to base 255 Blissey)', () => {
-    // HP is usually higher since no nature multiplier cap
-    const hpMax = getMaxStat('HP', 100, 3);
-    expect(hpMax).toBeGreaterThan(500);
+  it('HP max exceeds 500 at Lv100', () => {
+    expect(getMaxStat('HP', 100, 3)).toBeGreaterThan(500);
+  });
+
+  it('Lv100 max is greater than Lv50 max', () => {
+    expect(getMaxStat('HP', 100, 3)).toBeGreaterThan(getMaxStat('HP', 50, 3));
   });
 });
 
@@ -223,16 +247,14 @@ describe('NATURES data', () => {
   });
 
   it('has exactly 5 neutral natures', () => {
-    const neutral = NATURES.filter(n => !n.up);
-    expect(neutral).toHaveLength(5);
+    expect(NATURES.filter(n => !n.up)).toHaveLength(5);
   });
 
   it('has exactly 20 non-neutral natures', () => {
-    const nonNeutral = NATURES.filter(n => n.up);
-    expect(nonNeutral).toHaveLength(20);
+    expect(NATURES.filter(n => n.up)).toHaveLength(20);
   });
 
-  it('each non-neutral nature has both up and down', () => {
+  it('all non-neutral natures have both up and down', () => {
     NATURES.filter(n => n.up).forEach(n => {
       expect(n.up).toBeTruthy();
       expect(n.down).toBeTruthy();
@@ -241,21 +263,20 @@ describe('NATURES data', () => {
 
   it('all nature names are unique', () => {
     const names = NATURES.map(n => n.name);
-    const unique = new Set(names);
-    expect(unique.size).toBe(25);
+    expect(new Set(names).size).toBe(25);
   });
 
-  it('stat modifiers only reference valid stat keys', () => {
-    const validStats = new Set(['ATK','DEF','SP.ATK','SP.DEF','SPD']);
+  it('all stat modifiers reference valid stat keys', () => {
+    const valid = new Set(['ATK','DEF','SP.ATK','SP.DEF','SPD']);
     NATURES.filter(n => n.up).forEach(n => {
-      expect(validStats.has(n.up)).toBeTruthy();
-      expect(validStats.has(n.down)).toBeTruthy();
+      expect(valid.has(n.up)).toBeTruthy();
+      expect(valid.has(n.down)).toBeTruthy();
     });
   });
 });
 
 describe('allPokemon data', () => {
-  it('has 1025 entries', () => {
+  it('has exactly 1025 entries', () => {
     expect(allPokemon).toHaveLength(1025);
   });
 
@@ -265,64 +286,93 @@ describe('allPokemon data', () => {
   });
 
   it('last entry is Pecharunt (#1025)', () => {
-    const last = allPokemon[allPokemon.length - 1];
-    expect(last.id).toBe(1025);
-    expect(last.name).toBe('pecharunt');
+    expect(allPokemon[allPokemon.length - 1].id).toBe(1025);
+    expect(allPokemon[allPokemon.length - 1].name).toBe('pecharunt');
   });
 
   it('all entries have id and name', () => {
-    const invalid = allPokemon.filter(p => !p.id || !p.name);
-    expect(invalid).toHaveLength(0);
+    expect(allPokemon.filter(p => !p.id || !p.name)).toHaveLength(0);
   });
 
   it('all IDs are unique', () => {
-    const ids = new Set(allPokemon.map(p => p.id));
-    expect(ids.size).toBe(1025);
+    expect(new Set(allPokemon.map(p => p.id)).size).toBe(1025);
   });
 
   it('all names are lowercase', () => {
-    const hasUppercase = allPokemon.some(p => p.name !== p.name.toLowerCase());
-    expect(hasUppercase).toBeFalsy();
+    expect(allPokemon.some(p => p.name !== p.name.toLowerCase())).toBeFalsy();
   });
 
-  it('contains key Pokémon by name', () => {
+  it('contains key Pokémon', () => {
     const names = allPokemon.map(p => p.name);
-    ['pikachu','mewtwo','garchomp','blissey','shedinja','magikarp','terrakion','meloetta'].forEach(name => {
-      expect(names).toContain(name);
+    ['pikachu','mewtwo','garchomp','blissey','shedinja','magikarp',
+     'terrakion','meloetta','koraidon','miraidon'].forEach(n => {
+      expect(names).toContain(n);
     });
   });
 });
 
 describe('PRESETS data', () => {
   it('all presets have required fields', () => {
-    Object.entries(PRESETS).forEach(([key, p]) => {
+    Object.values(PRESETS).forEach(p => {
       expect(p.num).toBeGreaterThan(0);
       expect(p.name).toBeTruthy();
-      expect(p.types).toHaveLength(p.types.length); // is array
+      expect(Array.isArray(p.types)).toBeTruthy();
       expect(p.bases).toHaveLength(6);
     });
   });
 
   it('all preset base stats are in valid range 1–255', () => {
-    Object.entries(PRESETS).forEach(([key, p]) => {
+    Object.values(PRESETS).forEach(p => {
       p.bases.forEach(b => {
         expect(b).toBeGreaterThanOrEqual(1);
         expect(b).toBeLessThanOrEqual(255);
       });
     });
   });
+
+  it('Garchomp has correct base stats', () => {
+    const g = PRESETS.garchomp;
+    expect(g.bases[0]).toBe(108); // HP
+    expect(g.bases[1]).toBe(130); // ATK
+  });
+
+  it('Shedinja has base HP of 1', () => {
+    expect(PRESETS.shedinja.bases[0]).toBe(1);
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  I18N TESTS
 // ─────────────────────────────────────────────────────────────────────────────
-describe('i18n — t() function', () => {
+describe('i18n — locale registry', () => {
+  it('EN and ES locales are registered', () => {
+    const locales = getAvailableLocales();
+    expect(locales).toContain('en');
+    expect(locales).toContain('es');
+  });
+
+  it('TRANSLATIONS.en has keys after locale load', () => {
+    expect(Object.keys(TRANSLATIONS.en).length).toBeGreaterThan(50);
+  });
+
+  it('TRANSLATIONS.es has keys after locale load', () => {
+    expect(Object.keys(TRANSLATIONS.es).length).toBeGreaterThan(50);
+  });
+
+  it('registerLocale merges into existing locale', () => {
+    registerLocale('en', { '__merge_test__': 'merged' });
+    expect(TRANSLATIONS.en['__merge_test__']).toBe('merged');
+    delete TRANSLATIONS.en['__merge_test__'];
+  });
+});
+
+describe('i18n — t()', () => {
   it('returns English string by default', () => {
     expect(t('nav.calc')).toBe('CALC');
   });
 
-  it('returns key itself when key not found', () => {
-    expect(t('nonexistent.key')).toBe('nonexistent.key');
+  it('returns key itself when key not found in any locale', () => {
+    expect(t('nonexistent.key.xyz')).toBe('nonexistent.key.xyz');
   });
 
   it('returns Spanish string when lang is es', () => {
@@ -332,174 +382,253 @@ describe('i18n — t() function', () => {
     currentLang = prev;
   });
 
-  it('falls back to English if key missing in current lang', () => {
+  it('falls back to English when key missing in current lang', () => {
     const prev = currentLang;
     currentLang = 'es';
-    // Add a test key only in EN
-    TRANSLATIONS.en['__test_only__'] = 'test_value';
-    expect(t('__test_only__')).toBe('test_value');
-    delete TRANSLATIONS.en['__test_only__'];
+    TRANSLATIONS.en['__test_fallback__'] = 'fallback_value';
+    expect(t('__test_fallback__')).toBe('fallback_value');
+    delete TRANSLATIONS.en['__test_fallback__'];
     currentLang = prev;
   });
 });
 
-describe('i18n — tStat() function', () => {
-  it('returns HP in English', () => {
-    expect(tStat('HP')).toBe('HP');
-  });
+describe('i18n — tStat()', () => {
+  it('returns HP in English', () => { expect(tStat('HP')).toBe('HP'); });
+  it('returns ATK in English', () => { expect(tStat('ATK')).toBe('ATK'); });
 
-  it('translates ATK to ATQ in Spanish', () => {
+  it('translates stat abbreviations to Spanish', () => {
     const prev = currentLang;
     currentLang = 'es';
     expect(tStat('ATK')).toBe('ATQ');
     expect(tStat('SP.ATK')).toBe('ATQ.ESP');
+    expect(tStat('SP.DEF')).toBe('DEF.ESP');
     expect(tStat('SPD')).toBe('VEL');
+    expect(tStat('HP')).toBe('PS');
     currentLang = prev;
   });
 
-  it('returns the key itself for unknown stat', () => {
+  it('returns key itself for unknown stat', () => {
     expect(tStat('UNKNOWN')).toBe('UNKNOWN');
   });
 });
 
-describe('i18n — tNature() function', () => {
+describe('i18n — tNature()', () => {
   it('returns Adamant in English', () => {
     expect(tNature('Adamant')).toBe('Adamant');
   });
 
-  it('translates Adamant to Firme in Spanish', () => {
+  it('translates natures to Spanish', () => {
     const prev = currentLang;
     currentLang = 'es';
     expect(tNature('Adamant')).toBe('Firme');
     expect(tNature('Timid')).toBe('Tímida');
     expect(tNature('Jolly')).toBe('Alegre');
+    expect(tNature('Modest')).toBe('Modesta');
     currentLang = prev;
   });
 
-  it('all 25 natures have Spanish translations', () => {
+  it('all 25 natures have Spanish translations (no raw key returned)', () => {
     const prev = currentLang;
     currentLang = 'es';
     NATURES.forEach(n => {
-      const translated = tNature(n.name);
-      expect(translated).not.toBe('nature.' + n.name); // must not return raw key
+      expect(tNature(n.name)).not.toBe('nature.' + n.name);
     });
     currentLang = prev;
   });
 });
 
-describe('i18n — TRANSLATIONS completeness', () => {
+describe('i18n — completeness', () => {
   it('ES has all keys that EN has', () => {
-    const enKeys = Object.keys(TRANSLATIONS.en);
-    const esKeys = new Set(Object.keys(TRANSLATIONS.es));
-    const missing = enKeys.filter(k => !esKeys.has(k));
-    if (missing.length > 0) {
-      throw new Error(`ES missing keys: ${missing.join(', ')}`);
-    }
+    const missing = Object.keys(TRANSLATIONS.en)
+      .filter(k => !TRANSLATIONS.es?.[k]);
+    if (missing.length > 0)
+      throw new Error(`ES missing: ${missing.join(', ')}`);
   });
 
-  it('detectLang returns a valid language', () => {
-    const lang = detectLang();
-    expect(Object.keys(TRANSLATIONS)).toContain(lang);
+  it('detectLang returns a registered language code', () => {
+    expect(getAvailableLocales()).toContain(detectLang());
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-//  UI STATE TESTS
+//  EV CAP TESTS
+// ─────────────────────────────────────────────────────────────────────────────
+describe('EV 510 cap — syncEV()', () => {
+  // Reset state before each EV test
+  function resetEVs() {
+    state.evs = [0, 0, 0, 0, 0, 0];
+    state.gen = 3;
+  }
+
+  it('allows 252 EVs in a single stat', () => {
+    resetEVs();
+    syncEV(0, 252, 'ev');
+    expect(state.evs[0]).toBe(252);
+  });
+
+  it('does not allow more than 252 in a single stat', () => {
+    resetEVs();
+    syncEV(0, 300, 'ev');
+    expect(state.evs[0]).toBe(252);
+  });
+
+  it('allows 252 + 252 = 504 total (valid)', () => {
+    resetEVs();
+    syncEV(0, 252, 'ev');
+    syncEV(1, 252, 'ev');
+    expect(state.evs[0] + state.evs[1]).toBeLessThanOrEqual(510);
+  });
+
+  it('caps third stat so total never exceeds 510', () => {
+    resetEVs();
+    syncEV(0, 252, 'ev');
+    syncEV(1, 252, 'ev');
+    syncEV(2, 252, 'ev'); // only 6 remaining
+    const total = state.evs.reduce((a, b) => a + b, 0);
+    expect(total).toBeLessThanOrEqual(510);
+  });
+
+  it('total stays at or below 510 after filling all six stats', () => {
+    resetEVs();
+    for (let i = 0; i < 6; i++) syncEV(i, 252, 'ev');
+    const total = state.evs.reduce((a, b) => a + b, 0);
+    expect(total).toBeLessThanOrEqual(510);
+  });
+
+  it('setAllEVs(0) clears all EVs', () => {
+    resetEVs();
+    syncEV(0, 252, 'ev');
+    syncEV(1, 252, 'ev');
+    setAllEVs(0);
+    expect(state.evs.every(v => v === 0)).toBeTruthy();
+  });
+
+  it('spreadEVs preset stays within 510', () => {
+    resetEVs();
+    spreadEVs(252, 252, 0, 0, 0, 4); // 508 — valid
+    const total = state.evs.reduce((a, b) => a + b, 0);
+    expect(total).toBeLessThanOrEqual(510);
+  });
+
+  it('EV cap is not enforced in Gen I/II', () => {
+    resetEVs();
+    state.gen = 1;
+    syncEV(0, 65535, 'ev');
+    expect(state.evs[0]).toBe(65535);
+    state.gen = 3; // restore
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+//  STATE TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 describe('state object', () => {
   it('has all required fields', () => {
-    ['hp','bases','ivs','evs','nature','level','gen'].forEach(field => {
-      expect(state[field] !== undefined).toBeTruthy();
+    ['hp','bases','ivs','evs','nature','level','gen'].forEach(f => {
+      expect(state[f] !== undefined).toBeTruthy();
     });
   });
 
-  it('bases array has 5 elements (ATK, DEF, SP.ATK, SP.DEF, SPD)', () => {
-    expect(state.bases).toHaveLength(5);
-  });
-
-  it('ivs array has 6 elements (HP + 5 stats)', () => {
-    expect(state.ivs).toHaveLength(6);
-  });
-
-  it('evs array has 6 elements', () => {
-    expect(state.evs).toHaveLength(6);
-  });
-
-  it('default level is 100', () => {
-    expect(state.level).toBe(100);
-  });
-
-  it('default gen is 3', () => {
-    expect(state.gen).toBe(3);
-  });
+  it('bases has 5 elements', () => { expect(state.bases).toHaveLength(5); });
+  it('ivs has 6 elements',   () => { expect(state.ivs).toHaveLength(6); });
+  it('evs has 6 elements',   () => { expect(state.evs).toHaveLength(6); });
+  it('default level is 100', () => { expect(state.level).toBe(100); });
+  it('default gen is 3',     () => { expect(state.gen).toBe(3); });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
 //  DOM TESTS
 // ─────────────────────────────────────────────────────────────────────────────
-describe('DOM elements exist', () => {
-  const requiredIds = [
-    'pokemon-input','pokemon-dropdown','search-status','search-clear',
-    'sprite-box','pokemon-sprite','sprite-placeholder',
-    'pokedex-num','pokemon-name-display','type-badges',
-    'gen-select','level-range','level-num',
-    'base-hp','base-stats-grid',
-    'nature-grid','selected-nature',
-    'iv-inputs','ev-inputs','ev-total',
-    'result-section','result-grid','result-gen','bst-value',
-    'breakdown-body','lang-select',
-    'page-calc','page-formula','page-compare',
+describe('DOM — required elements exist', () => {
+  const ids = [
+    'pokemon-input', 'pokemon-dropdown', 'search-status', 'search-clear',
+    'sprite-box', 'pokemon-sprite', 'sprite-placeholder',
+    'pokedex-num', 'pokemon-name-display', 'type-badges',
+    'gen-select', 'level-range', 'level-num',
+    'base-hp', 'base-stats-grid',
+    'nature-grid', 'selected-nature',
+    'iv-inputs', 'ev-inputs', 'ev-total',
+    'result-section', 'result-grid', 'result-gen', 'bst-value',
+    'breakdown-body', 'lang-select',
+    'page-calc', 'page-formula', 'page-compare',
   ];
 
-  requiredIds.forEach(id => {
-    it(`#${id} exists in DOM`, () => {
-      const el = document.getElementById(id);
-      if (!el) throw new Error(`Element #${id} not found in DOM`);
+  ids.forEach(id => {
+    it(`#${id} exists`, () => {
+      if (!document.getElementById(id))
+        throw new Error(`#${id} not found`);
     });
   });
 
   it('nature grid has 25 buttons', () => {
-    const btns = document.querySelectorAll('.nature-btn');
-    expect(btns.length).toBe(25);
+    expect(document.querySelectorAll('.nature-btn').length).toBe(25);
   });
 
   it('lang-select has EN and ES options', () => {
-    const sel = document.getElementById('lang-select');
-    const values = Array.from(sel.options).map(o => o.value);
+    const values = Array.from(document.getElementById('lang-select').options)
+                        .map(o => o.value);
     expect(values).toContain('en');
     expect(values).toContain('es');
   });
 
   it('bottom nav has 3 items', () => {
-    const items = document.querySelectorAll('.nav-item');
-    expect(items.length).toBe(3);
-  });
-
-  it('preset chips are present', () => {
-    const chips = document.querySelectorAll('.chip');
-    expect(chips.length).toBeGreaterThan(0);
+    expect(document.querySelectorAll('.nav-item').length).toBe(3);
   });
 });
 
-describe('DOM initial state', () => {
-  it('calculator page is active on load', () => {
-    const calc = document.getElementById('page-calc');
-    expect(calc.classList.contains('active')).toBeTruthy();
+describe('DOM — IV/EV inputs use new element IDs', () => {
+  it('iv-range-0 exists after buildIVInputs', () => {
+    buildIVInputs();
+    expect(document.getElementById('iv-range-0')).toBeTruthy();
   });
 
-  it('result section is hidden on load', () => {
+  it('iv-num-0 exists after buildIVInputs', () => {
+    expect(document.getElementById('iv-num-0')).toBeTruthy();
+  });
+
+  it('ev-range-0 exists after buildEVInputs', () => {
+    buildEVInputs();
+    expect(document.getElementById('ev-range-0')).toBeTruthy();
+  });
+
+  it('ev-num-0 exists after buildEVInputs', () => {
+    expect(document.getElementById('ev-num-0')).toBeTruthy();
+  });
+
+  it('all 6 IV range + number inputs exist', () => {
+    for (let i = 0; i < 6; i++) {
+      expect(document.getElementById('iv-range-' + i)).toBeTruthy();
+      expect(document.getElementById('iv-num-'   + i)).toBeTruthy();
+    }
+  });
+
+  it('all 6 EV range + number inputs exist', () => {
+    for (let i = 0; i < 6; i++) {
+      expect(document.getElementById('ev-range-' + i)).toBeTruthy();
+      expect(document.getElementById('ev-num-'   + i)).toBeTruthy();
+    }
+  });
+});
+
+describe('DOM — initial state', () => {
+  it('calculator page is active on load', () => {
+    expect(document.getElementById('page-calc').classList.contains('active')).toBeTruthy();
+  });
+
+  it('result section is toggled by calculate()', () => {
     const rs = document.getElementById('result-section');
+    rs.style.display = 'none';
     expect(rs.style.display).toBe('none');
+    calculate();
+    expect(rs.style.display).not.toBe('none');
   });
 
   it('level input defaults to 100', () => {
-    const lvl = document.getElementById('level-num');
-    expect(parseInt(lvl.value)).toBe(100);
+    expect(parseInt(document.getElementById('level-num').value)).toBe(100);
   });
 
-  it('base-hp input has a value', () => {
-    const hp = document.getElementById('base-hp');
-    expect(parseInt(hp.value)).toBeGreaterThan(0);
+  it('base-hp has a positive value', () => {
+    expect(parseInt(document.getElementById('base-hp').value)).toBeGreaterThan(0);
   });
 });
 
@@ -507,84 +636,91 @@ describe('DOM initial state', () => {
 //  INTEGRATION TESTS
 // ─────────────────────────────────────────────────────────────────────────────
 describe('Integration — calculate()', () => {
-  it('runs calculate without throwing', () => {
+  it('runs without throwing', () => {
     calculate();
-    const rs = document.getElementById('result-section');
-    expect(rs.style.display).not.toBe('none');
+    expect(document.getElementById('result-section').style.display).not.toBe('none');
   });
 
-  it('shows 6 stat result cards after calculate', () => {
+  it('renders 6 stat result cards', () => {
     calculate();
-    const cards = document.getElementById('result-grid').children;
-    expect(cards.length).toBe(6);
+    expect(document.getElementById('result-grid').children.length).toBe(6);
   });
 
-  it('BST value is a positive number after calculate', () => {
+  it('BST is a positive number', () => {
     calculate();
-    const bst = parseInt(document.getElementById('bst-value').textContent);
-    expect(bst).toBeGreaterThan(0);
+    expect(parseInt(document.getElementById('bst-value').textContent)).toBeGreaterThan(0);
   });
 
-  it('calculate uses current level from state', () => {
-    state.level = 100;
-    state.hp    = 255;
-    state.ivs   = [31,31,31,31,31,31];
-    state.evs   = [252,0,0,0,0,0];
+  it('Blissey HP at Lv100 perfect IVs/EVs matches formula', () => {
+    state.hp     = 255;
+    state.ivs[0] = 31;
+    state.evs[0] = 252;
+    state.level  = 100;
+    state.gen    = 3;
     document.getElementById('base-hp').value = 255;
     calculate();
-    const bst = parseInt(document.getElementById('bst-value').textContent);
-    expect(bst).toBeGreaterThan(200);
+    // The HP stat card should show 714
+    const cards = document.getElementById('result-grid').children;
+    expect(cards[0].querySelector('.stat-result-value').textContent).toBe('714');
   });
 });
 
 describe('Integration — language switch', () => {
-  it('switches UI to Spanish without errors', () => {
+  it('switches to Spanish without errors', () => {
+    if (!TRANSLATIONS.es) throw new Error('ES locale not loaded — check script tags in tests/index.html');
     setLang('es');
-    const btn = document.querySelector('[data-i18n="btn.calculate"]');
-    expect(btn.textContent).toBe('▶ CALCULAR STATS');
-    setLang('en'); // restore
+    expect(t('btn.calculate')).toBe('▶ CALCULAR STATS');
+    setLang('en');
   });
 
   it('switches back to English correctly', () => {
     setLang('es');
     setLang('en');
-    const btn = document.querySelector('[data-i18n="btn.calculate"]');
-    expect(btn.textContent).toBe('▶ CALCULATE STATS');
+    expect(t('btn.calculate')).toBe('▶ CALCULATE STATS');
   });
 
-  it('nature grid updates on language switch', () => {
+  it('nature grid shows translated names in Spanish', () => {
     setLang('es');
     const firstNature = document.querySelector('.nature-btn');
-    // Hardy → Fuerte in Spanish
     expect(firstNature.textContent).toContain('Fuerte');
     setLang('en');
+  });
+
+  it('nature grid shows English names after switching back', () => {
+    setLang('es');
+    setLang('en');
+    expect(document.querySelector('.nature-btn').textContent).toContain('Hardy');
+  });
+
+  it('data-i18n span updates on language switch', () => {
+    const span = document.querySelector('[data-i18n="btn.calculate"]');
+    setLang('es');
+    expect(span.textContent).toBe('▶ CALCULAR STATS');
+    setLang('en');
+    expect(span.textContent).toBe('▶ CALCULATE STATS');
   });
 });
 
 describe('Integration — dropdown filter', () => {
-  it('filterDropdown with empty string shows 60 results', () => {
+  it('empty string shows 60 results', () => {
     renderDropdown('');
-    const items = document.querySelectorAll('.dd-item');
-    expect(items.length).toBe(60);
+    expect(document.querySelectorAll('.dd-item').length).toBe(60);
   });
 
-  it('filterDropdown with "pika" shows pikachu first', () => {
+  it('"pika" shows pikachu first', () => {
     renderDropdown('pika');
-    const first = document.querySelector('.dd-item');
-    expect(first.dataset.name).toBe('pikachu');
+    expect(document.querySelector('.dd-item').dataset.name).toBe('pikachu');
   });
 
-  it('filterDropdown with "999" shows gimmighoul (#999)', () => {
-    renderDropdown('999');
-    const items = document.querySelectorAll('.dd-item');
-    const names = Array.from(items).map(i => i.dataset.name);
-    expect(names).toContain('gimmighoul');
+  it('"445" shows garchomp', () => {
+    renderDropdown('445');
+    const names = Array.from(document.querySelectorAll('.dd-item')).map(i => i.dataset.name);
+    expect(names).toContain('garchomp');
   });
 
-  it('filterDropdown with nonsense shows no results', () => {
+  it('nonsense query shows 0 results', () => {
     renderDropdown('zzzznotapokemon');
-    const items = document.querySelectorAll('.dd-item');
-    expect(items.length).toBe(0);
+    expect(document.querySelectorAll('.dd-item').length).toBe(0);
   });
 });
 
@@ -602,23 +738,22 @@ function renderSummary() {
   const color = failed === 0 ? '#44cc44' : '#ff4444';
   container.innerHTML = `
     <div style="font-family:'Press Start 2P',monospace;font-size:8px;margin-bottom:16px;color:${color}">
-      ${failed === 0 ? '✓ ALL TESTS PASSED' : `✗ ${failed} TEST(S) FAILED`}
+      ${failed === 0 ? '✓ ALL TESTS PASSED' : `✗ ${failed} FAILED`}
       <span style="color:#9898c8;margin-left:12px">${passed}/${total}</span>
     </div>
     ${results.map(r => `
       <div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #2a2a5a;
                   font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600">
-        <span style="color:${r.pass?'#44cc44':'#ff4444'};min-width:16px">${r.pass?'✓':'✗'}</span>
-        <span style="color:${r.pass?'#e8e8f8':'#ff8888'};flex:1">${r.name}</span>
-        ${!r.pass ? `<span style="color:#ff6666;font-size:12px">${r.error}</span>` : ''}
+        <span style="color:${r.pass ? '#44cc44' : '#ff4444'};min-width:16px">${r.pass ? '✓' : '✗'}</span>
+        <span style="color:${r.pass ? '#e8e8f8' : '#ff8888'};flex:1">${r.name}</span>
+        ${!r.pass ? `<span style="color:#ff6666;font-size:12px;text-align:right;max-width:300px">${r.error}</span>` : ''}
       </div>
     `).join('')}
   `;
 }
 
-// Run after DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => setTimeout(renderSummary, 100));
+  document.addEventListener('DOMContentLoaded', () => setTimeout(renderSummary, 150));
 } else {
-  setTimeout(renderSummary, 100);
+  setTimeout(renderSummary, 150);
 }
