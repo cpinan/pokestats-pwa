@@ -96,25 +96,16 @@ function setAllIVs(val) {
 }
 
 function setAllEVs(val) {
-  state.evs = Array(6).fill(val);
-  for (let i = 0; i < 6; i++) {
-    const r = document.getElementById('ev-range-' + i);
-    const n = document.getElementById('ev-num-'   + i);
-    if (r) r.value = val;
-    if (n) n.value = val;
-  }
-  updateEVTotal();
+  // Reset then apply through syncEV so the 510 cap is enforced
+  state.evs = [0, 0, 0, 0, 0, 0];
+  for (let i = 0; i < 6; i++) syncEV(i, val, 'ev');
 }
 
 function spreadEVs(...vals) {
-  vals.forEach((v, i) => {
-    state.evs[i] = v;
-    const r = document.getElementById('ev-range-' + i);
-    const n = document.getElementById('ev-num-'   + i);
-    if (r) r.value = v;
-    if (n) n.value = v;
-  });
-  updateEVTotal();
+  // Apply preset values through syncEV so the 510 cap is respected
+  // Reset first to give each stat full headroom
+  state.evs = [0, 0, 0, 0, 0, 0];
+  vals.forEach((v, i) => syncEV(i, v, 'ev'));
 }
 
 function showPage(name, navEl) {

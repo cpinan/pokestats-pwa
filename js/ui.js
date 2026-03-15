@@ -80,6 +80,18 @@ function buildEVInputs(containerId = 'ev-inputs', prefix='ev') {
 
 function syncEV(i, val, prefix) {
   val = Math.round(val);
+
+  if (prefix === 'ev' && state.gen > 2) {
+    const EV_MAX_TOTAL = 510;
+    const EV_MAX_STAT  = 252;
+    // Clamp to per-stat max first
+    val = Math.min(val, EV_MAX_STAT);
+    // Then clamp so total doesn't exceed 510
+    const usedByOthers = state.evs.reduce((sum, v, idx) => idx === i ? sum : sum + v, 0);
+    const remaining = EV_MAX_TOTAL - usedByOthers;
+    if (val > remaining) val = Math.max(0, remaining);
+  }
+
   if (prefix === 'ev') {
     state.evs[i] = val;
     updateEVTotal();
@@ -96,7 +108,19 @@ function updateEVTotal() {
   const el = document.getElementById('ev-total');
   if (el) {
     el.textContent = `${total} / ${max}`;
-    el.style.color = total > max ? '#ff4444' : 'var(--accent)';
+    el.style.color = total >= max ? 'var(--accent)' : 'var(--text2)';
+  }
+  // Update slider max hints — grey out sliders that have no remaining budget
+  if (state.gen > 2) {
+    const remaining = max - total;
+    for (let j = 0; j < 6; j++) {
+      const r = document.getElementById('ev-range-' + j);
+      const n = document.getElementById('ev-num-'   + j);
+      const headroom = state.evs[j] + remaining;
+      const cap = Math.min(252, headroom);
+      if (r) r.max = cap;
+      if (n) n.max = cap;
+    }
   }
 }
 

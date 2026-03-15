@@ -166,18 +166,26 @@ tNature('Adamant')   // EN: "Adamant"            →  ES: "Firme"
 
 ### Adding a new language
 
-1. Add a block to `TRANSLATIONS` in `js/i18n.js`:
+Each language is a standalone file in `locales/` — no changes to existing files needed.
+
+1. Create **`locales/fr.js`** (copy `locales/en.js` as a template):
    ```js
-   fr: {
+   registerLocale('fr', {
      'btn.calculate': '▶ CALCULER LES STATS',
      'nature.Adamant': 'Rigide',
      // missing keys fall back to English automatically
-   }
+   });
    ```
-2. Add an `<option>` to `#lang-select` in `index.html`:
+2. Add a `<script>` tag in **`index.html`** after the other locale scripts:
+   ```html
+   <script src="locales/fr.js"></script>
+   ```
+3. Add an `<option>` to **`#lang-select`** in `index.html`:
    ```html
    <option value="fr">🇫🇷 FR</option>
    ```
+
+That's it — three steps, one new file, two one-line edits.
 
 ---
 

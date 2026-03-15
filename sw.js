@@ -1,4 +1,4 @@
-const CACHE = 'pokestats-v1';
+const CACHE = 'pokestats-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -6,6 +6,8 @@ const ASSETS = [
   './js/data.js',
   './js/formulas.js',
   './js/i18n.js',
+  './locales/en.js',
+  './locales/es.js',
   './js/ui.js',
   './js/pokemon.js',
   './js/app.js',
