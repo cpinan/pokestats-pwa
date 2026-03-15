@@ -2,6 +2,9 @@
 
 > A fast, offline-ready Progressive Web App for calculating Pokémon stats across all generations — with full i18n support.
 
+### 🌐 [Live Demo → cpinan.github.io/pokestats-pwa](https://cpinan.github.io/pokestats-pwa/)
+
+[![Live](https://img.shields.io/badge/Live-Demo-brightgreen?logo=github)](https://cpinan.github.io/pokestats-pwa/)
 [![PWA](https://img.shields.io/badge/PWA-ready-blueviolet?logo=googlechrome)](#pwa-installation)
 [![Generations](https://img.shields.io/badge/Generations-I--IX-red)](#generation-differences)
 [![i18n](https://img.shields.io/badge/Languages-EN%20%7C%20ES-orange)](#internationalisation-i18n)
@@ -25,9 +28,13 @@
 
 ## 🚀 Quick Start
 
+**Try it live:** [cpinan.github.io/pokestats-pwa](https://cpinan.github.io/pokestats-pwa/)
+
+Or run locally:
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/pokestats.git
-cd pokestats
+git clone https://github.com/cpinan/pokestats-pwa.git
+cd pokestats-pwa
 python3 -m http.server 8080
 # → open http://localhost:8080
 ```
@@ -187,11 +194,11 @@ python3 -m http.server 8080
 
 ## 🚢 Deployment
 
-| Platform | Steps |
-|---|---|
-| **GitHub Pages** | Push to public repo → Settings → Pages → Source: main → Save |
-| **Netlify Drop** | Drag folder to [app.netlify.com/drop](https://app.netlify.com/drop) |
-| **Vercel** | `npx vercel` in project folder |
+| Platform | URL | Steps |
+|---|---|---|
+| **GitHub Pages** | [cpinan.github.io/pokestats-pwa](https://cpinan.github.io/pokestats-pwa/) | Push to repo → Settings → Pages → Source: main → Save |
+| **Netlify Drop** | auto-generated | Drag folder to [app.netlify.com/drop](https://app.netlify.com/drop) |
+| **Vercel** | auto-generated | `npx vercel` in project folder |
 
 HTTPS is required for PWA install prompt and service worker.
 

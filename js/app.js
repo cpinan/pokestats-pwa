@@ -87,29 +87,32 @@ function buildBreakdown(allStats, level, gen) {
 
 function setAllIVs(val) {
   state.ivs = Array(6).fill(val);
-  document.querySelectorAll('#iv-inputs input[type=range]').forEach((r, i) => {
-    r.value = val;
-    document.getElementById(`iv-val-${i}`).textContent = val;
-  });
+  for (let i = 0; i < 6; i++) {
+    const r = document.getElementById('iv-range-' + i);
+    const n = document.getElementById('iv-num-'   + i);
+    if (r) r.value = val;
+    if (n) n.value = val;
+  }
 }
 
 function setAllEVs(val) {
   state.evs = Array(6).fill(val);
-  document.querySelectorAll('#ev-inputs input[type=range]').forEach((r, i) => {
-    r.value = val;
-    document.getElementById(`ev-val-${i}`).textContent = val;
-  });
+  for (let i = 0; i < 6; i++) {
+    const r = document.getElementById('ev-range-' + i);
+    const n = document.getElementById('ev-num-'   + i);
+    if (r) r.value = val;
+    if (n) n.value = val;
+  }
   updateEVTotal();
 }
 
 function spreadEVs(...vals) {
   vals.forEach((v, i) => {
     state.evs[i] = v;
-    const r = document.querySelector(`#ev-inputs input[type=range]:nth-child(${i*3+2})`);
-    const inputs = document.querySelectorAll('#ev-inputs input[type=range]');
-    if (inputs[i]) inputs[i].value = v;
-    const valEl = document.getElementById(`ev-val-${i}`);
-    if (valEl) valEl.textContent = v;
+    const r = document.getElementById('ev-range-' + i);
+    const n = document.getElementById('ev-num-'   + i);
+    if (r) r.value = v;
+    if (n) n.value = v;
   });
   updateEVTotal();
 }
@@ -193,29 +196,31 @@ function buildCompare() {
 function buildCmpEVs(containerId, prefix) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
-  const allStats = ['HP', ...STATS]; // 'HP' translated via tStat()
+  const allStats = ['HP', ...STATS];
   allStats.forEach((s, i) => {
     const div = document.createElement('div');
     div.className = 'ev-row';
     div.style.marginBottom = '8px';
     div.innerHTML = `
       <div class="stat-label" style="font-size:6px">${tStat(s)}</div>
-      <input type="range" min="0" max="252" step="4" value="0"
-             oninput="${prefix}EVsUpdate(${i},+this.value,this)">
-      <div class="ev-value" id="${prefix}-ev-${i}">0</div>
+      <input type="range" id="${prefix}-ev-range-${i}" min="0" max="252" step="4" value="0"
+             oninput="syncCmpEV('${prefix}', ${i}, +this.value)">
+      <input type="number" id="${prefix}-ev-num-${i}" min="0" max="252" value="0"
+             style="width:44px;text-align:center;padding:4px 2px;font-size:13px"
+             oninput="syncCmpEV('${prefix}', ${i}, Math.min(252, Math.max(0, +this.value||0)))">
     `;
     container.appendChild(div);
   });
 }
 
-function caEVsUpdate(i, v, el) {
-  cmpEVsA[i] = v;
-  document.getElementById(`ca-ev-${i}`).textContent = v;
-}
-
-function cbEVsUpdate(i, v, el) {
-  cmpEVsB[i] = v;
-  document.getElementById(`cb-ev-${i}`).textContent = v;
+function syncCmpEV(prefix, i, val) {
+  val = Math.round(val);
+  if (prefix === 'ca') cmpEVsA[i] = val;
+  if (prefix === 'cb') cmpEVsB[i] = val;
+  const r = document.getElementById(prefix + '-ev-range-' + i);
+  const n = document.getElementById(prefix + '-ev-num-'   + i);
+  if (r && +r.value !== val) r.value = val;
+  if (n && +n.value !== val) n.value = val;
 }
 
 function runCompare() {

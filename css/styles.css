@@ -517,7 +517,7 @@ input[type=number] { -moz-appearance: textfield; }
 /* ─── EV SLIDER ─────────────────────────────────────── */
 .ev-row {
   display: grid;
-  grid-template-columns: 54px 1fr 42px;
+  grid-template-columns: 54px 1fr 50px;
   gap: 8px;
   align-items: center;
   margin-bottom: 10px;
@@ -790,5 +790,5 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
 @media (max-width: 380px) {
   .stat-section { grid-template-columns: 44px 1fr 50px 50px 50px; gap: 4px; }
-  .ev-row { grid-template-columns: 44px 1fr 36px; }
+  .ev-row { grid-template-columns: 44px 1fr 44px; }
 }

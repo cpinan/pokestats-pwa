@@ -25,48 +25,69 @@ function buildBaseStatsGrid() {
 function buildIVInputs() {
   const container = document.getElementById('iv-inputs');
   container.innerHTML = '';
-  const allStats = ['HP', ...STATS]; // 'HP' translated via tStat()
+  const allStats = ['HP', ...STATS];
+  const maxIV = state.gen <= 2 ? 15 : 31;
   allStats.forEach((s, i) => {
     const div = document.createElement('div');
     div.className = 'ev-row';
     div.innerHTML = `
       <div class="stat-label" style="font-size:6px">${tStat(s)}</div>
-      <input type="range" min="0" max="${state.gen <= 2 ? 15 : 31}"
-             value="${state.ivs[i]}" step="1"
-             oninput="state.ivs[${i}]=+this.value;document.getElementById('iv-val-${i}').textContent=this.value">
-      <div class="ev-value" id="iv-val-${i}">${state.ivs[i]}</div>
+      <input type="range" id="iv-range-${i}" min="0" max="${maxIV}" step="1"
+             value="${state.ivs[i]}"
+             oninput="syncIV(${i}, +this.value)">
+      <input type="number" id="iv-num-${i}" min="0" max="${maxIV}"
+             value="${state.ivs[i]}"
+             style="width:44px;text-align:center;padding:4px 2px;font-size:13px"
+             oninput="syncIV(${i}, Math.min(${maxIV}, Math.max(0, +this.value||0)))">
     `;
     container.appendChild(div);
   });
+}
+
+function syncIV(i, val) {
+  val = Math.round(val);
+  state.ivs[i] = val;
+  const r = document.getElementById('iv-range-' + i);
+  const n = document.getElementById('iv-num-'   + i);
+  if (r && +r.value !== val) r.value = val;
+  if (n && +n.value !== val) n.value = val;
 }
 
 function buildEVInputs(containerId = 'ev-inputs', prefix='ev') {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
-  const maxEV = state.gen <= 2 ? 65535 : 252;
-  const allStats = ['HP', ...STATS]; // 'HP' translated via tStat()
+  const maxEV  = state.gen <= 2 ? 65535 : 252;
+  const stepEV = state.gen <= 2 ? 1 : 4;
+  const allStats = ['HP', ...STATS];
   allStats.forEach((s, i) => {
     const div = document.createElement('div');
     div.className = 'ev-row';
     div.innerHTML = `
       <div class="stat-label" style="font-size:6px">${tStat(s)}</div>
-      <input type="range" min="0" max="${maxEV}" step="${state.gen <= 2 ? 1 : 4}"
+      <input type="range" id="${prefix}-range-${i}" min="0" max="${maxEV}" step="${stepEV}"
              value="${state.evs[i]}"
-             oninput="updateEV(${i},+this.value,'${prefix}')">
-      <div class="ev-value" id="${prefix}-val-${i}">${state.evs[i]}</div>
+             oninput="syncEV(${i}, +this.value, '${prefix}')">
+      <input type="number" id="${prefix}-num-${i}" min="0" max="${maxEV}"
+             value="${state.evs[i]}"
+             style="width:44px;text-align:center;padding:4px 2px;font-size:13px"
+             oninput="syncEV(${i}, Math.min(${maxEV}, Math.max(0, +this.value||0)), '${prefix}')">
     `;
     container.appendChild(div);
   });
   updateEVTotal();
 }
 
-function updateEV(i, val, prefix='ev') {
+function syncEV(i, val, prefix) {
+  val = Math.round(val);
   if (prefix === 'ev') {
     state.evs[i] = val;
-    document.getElementById(`ev-val-${i}`).textContent = val;
     updateEVTotal();
   }
+  const r = document.getElementById(prefix + '-range-' + i);
+  const n = document.getElementById(prefix + '-num-'   + i);
+  if (r && +r.value !== val) r.value = val;
+  if (n && +n.value !== val) n.value = val;
 }
 
 function updateEVTotal() {
