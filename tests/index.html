@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PokéStats — Test Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d0d1a; color: #e8e8f8;
+      font-family: 'Rajdhani', sans-serif; font-size: 15px;
+      padding: 24px; max-width: 860px; margin: auto;
+    }
+    h1 {
+      font-family: 'Press Start 2P', monospace; font-size: 11px;
+      color: #ffcc00; text-shadow: 2px 2px 0 #8b0000;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-family: 'Press Start 2P', monospace; font-size: 6px;
+      color: #6868a8; margin-bottom: 24px;
+    }
+    #test-results { margin-top: 16px; }
+    .loading {
+      font-family: 'Press Start 2P', monospace; font-size: 7px;
+      color: #6868a8; padding: 20px 0;
+    }
+    /* Hide the actual app UI that loads */
+    header, .app, .bottom-nav { display: none !important; }
+    body::after { display: none !important; }
+  </style>
+</head>
+<body>
+  <h1>POKÉSTATS TEST SUITE</h1>
+  <p class="subtitle">Unit · Integration · DOM · i18n · Formulas</p>
+  <p class="loading" id="loading-msg">RUNNING TESTS…</p>
+  <div id="test-results"></div>
+
+  <!-- Load full app (hidden) so all functions + DOM are available -->
+  <div id="app" style="display:none">
+    <!-- Minimal DOM stubs needed by tests -->
+    <input id="pokemon-input" type="text">
+    <div id="pokemon-dropdown"></div>
+    <div id="search-status"></div>
+    <div id="search-clear"></div>
+    <div id="sprite-box"><img id="pokemon-sprite"><svg id="sprite-placeholder"></svg></div>
+    <div id="pokedex-num"></div>
+    <div id="pokemon-name-display"></div>
+    <div id="type-badges"></div>
+    <select id="gen-select">
+      <option value="1">Gen I</option>
+      <option value="2">Gen II</option>
+      <option value="3" selected>Gen III-V</option>
+      <option value="6">Gen VI+</option>
+    </select>
+    <input id="level-range" type="range" value="100">
+    <input id="level-num" type="number" value="100">
+    <input id="base-hp" type="number" value="108">
+    <div id="base-stats-grid"></div>
+    <div id="nature-grid"></div>
+    <div id="selected-nature"></div>
+    <div id="iv-inputs"></div>
+    <div id="ev-inputs"></div>
+    <div id="ev-total"></div>
+    <div id="result-section" style="display:none"></div>
+    <div id="result-title"></div>
+    <div id="result-grid"></div>
+    <div id="result-gen"></div>
+    <div id="bst-value"></div>
+    <div id="breakdown-body"></div>
+    <div id="full-nature-chart"></div>
+    <select id="lang-select">
+      <option value="en">EN</option>
+      <option value="es">ES</option>
+    </select>
+    <select id="cmp-nature-a"></select>
+    <select id="cmp-nature-b"></select>
+    <div id="cmp-ev-inputs-a"></div>
+    <div id="cmp-ev-inputs-b"></div>
+    <div id="compare-results"></div>
+    <div id="page-calc" class="page active"></div>
+    <div id="page-formula" class="page"></div>
+    <div id="page-compare" class="page"></div>
+    <nav class="bottom-nav">
+      <div class="nav-item active"></div>
+      <div class="nav-item"></div>
+      <div class="nav-item"></div>
+    </nav>
+    <!-- Chip buttons for spreadEVs tests -->
+    <div class="chip"></div>
+    <button data-i18n="btn.calculate"><span data-i18n="btn.calculate">▶ CALCULATE STATS</span></button>
+  </div>
+
+  <!-- Load app modules in order -->
+  <script src="../js/data.js"></script>
+  <script src="../js/formulas.js"></script>
+  <script src="../js/i18n.js"></script>
+  <script src="../js/ui.js"></script>
+  <script src="../js/pokemon.js"></script>
+  <script src="../js/app.js"></script>
+
+  <!-- Run tests after everything is loaded -->
+  <script src="tests.js"></script>
+  <script>
+    // Hide loading message once results render
+    const obs = new MutationObserver(() => {
+      if (document.getElementById('test-results').innerHTML) {
+        document.getElementById('loading-msg').style.display = 'none';
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.getElementById('test-results'), { childList: true });
+  </script>
+</body>
+</html>
