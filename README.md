@@ -259,12 +259,14 @@ The Pokémon list (1,025 entries) is embedded — dropdown works offline. Sprite
 
 MIT — free to use, modify, and distribute.
 
+
+
 ---
 
 ## 📝 Changelog
 
 | Version | Changes |
 |---|---|
-| **2.0** | Refactored into JS modules · i18n (EN/ES) · ~70 automated tests · README · `.env.example` |
+| **2.0** | Refactored into JS modules · i18n (EN/ES) · ~80 automated tests · README · `.env.example` |
 | **1.1** | Live PokéAPI search · language selector · CORS proxy fallback |
 | **1.0** | Initial release — Gen I–IX formulas, nature/IV/EV calculator, compare tab, PWA |

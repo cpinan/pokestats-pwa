@@ -15,3 +15,4 @@ Thumbs.db
 # Node (if you add a build step)
 node_modules/
 dist/
+

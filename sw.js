@@ -1,4 +1,10 @@
-const CACHE = 'pokestats-v3';
+// ─────────────────────────────────────────────────────────────────────────────
+//  sw.js — Service Worker
+//  Uses relative paths so it works on both localhost and GitHub Pages
+//  (/pokestats-pwa/) without any changes.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const CACHE = 'pokestats-v4';
 const ASSETS = [
   './',
   './index.html',
@@ -6,11 +12,11 @@ const ASSETS = [
   './js/data.js',
   './js/formulas.js',
   './js/i18n.js',
-  './locales/en.js',
-  './locales/es.js',
   './js/ui.js',
   './js/pokemon.js',
   './js/app.js',
+  './locales/en.js',
+  './locales/es.js',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
@@ -26,9 +32,11 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+      ))
+      .then(() => self.clients.claim())
   );
 });
 

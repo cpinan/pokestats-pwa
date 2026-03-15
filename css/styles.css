@@ -792,3 +792,5 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .stat-section { grid-template-columns: 44px 1fr 50px 50px 50px; gap: 4px; }
   .ev-row { grid-template-columns: 44px 1fr 44px; }
 }
+
+
