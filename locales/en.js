@@ -19,8 +19,8 @@ registerLocale('en', {
   'section.saved':       'SAVED BUILDS',
   'summary.finalstats': 'FINAL STATS',
   'summary.evdist':     'EV Distribution',
-  'compare.modebuild':   'BUILD A vs B',
-  'compare.modepokemon': 'POKÉMON vs POKÉMON',
+  'compare.modebuild':   'EV / NATURE',
+  'compare.modepokemon': 'MULTI POKÉMON',
   'compare.maxslots':    'Max 4 Pokémon',
   'compare.empty':       'No Pokémon added yet. Hit "+ ADD TO COMPARE" after calculating.',
 

@@ -15,6 +15,8 @@ registerLocale('de', {
   'section.saved':       'GESPEICHERTE BUILDS',
   'summary.finalstats':  'ENDGÜLTIGE STATS',
   'summary.evdist':      'EV-Verteilung',
+  'compare.modebuild':   'EV / WESEN',
+  'compare.modepokemon': 'MULTI POKÉMON',
   'compare.maxslots':    'Max. 4 Pokémon',
   'compare.empty':       'Kein Pokémon hinzugefügt. "+ HINZUFÜGEN" nach dem Berechnen klicken.',
 

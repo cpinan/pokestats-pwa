@@ -19,8 +19,8 @@ registerLocale('es', {
   'section.saved':       'BUILDS GUARDADOS',
   'summary.finalstats': 'STATS FINALES',
   'summary.evdist':     'Distribución de EVs',
-  'compare.modebuild':   'BUILD A vs B',
-  'compare.modepokemon': 'POKÉMON vs POKÉMON',
+  'compare.modebuild':   'EV / NATURA',
+  'compare.modepokemon': 'MULTI POKÉMON',
   'compare.maxslots':    'Máximo 4 Pokémon',
   'compare.empty':       'Sin Pokémon agregados. Pulsa "+ AGREGAR A COMPARAR" tras calcular.',
 

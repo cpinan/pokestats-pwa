@@ -9,13 +9,11 @@ function buildBaseStatsGrid() {
   STATS.forEach((s, i) => {
     const row = document.createElement('div');
     row.className = 'stat-section';
-    row.style.marginTop = '8px';
     row.innerHTML = `
       <div class="stat-label">${tStat(s)}</div>
       <input type="number" id="base-${i}" min="1" max="255" value="${state.bases[i]}"
              style="text-align:center" oninput="state.bases[${i}]=+this.value">
       <div class="stat-modifier" id="nat-${i}"></div>
-      <div></div><div></div>
     `;
     container.appendChild(row);
   });

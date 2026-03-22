@@ -26,6 +26,7 @@ function addCompareSlot() {
 function removeCompareSlot(index) {
   compareSlots.splice(index, 1);
   renderComparatorGrid();
+  updateCompareBadge();
 }
 
 function calculateSlot(slot) {
@@ -40,8 +41,7 @@ function calculateSlot(slot) {
 
 function addSavedToComparator(id) {
   if (compareSlots.length >= 4) {
-    const statusEl = document.getElementById('cmp-add-status');
-    if (statusEl) { statusEl.textContent = t('compare.maxslots'); setTimeout(() => { statusEl.textContent = ''; }, 2000); }
+    showToast('⚠ ' + t('compare.maxslots'));
     return;
   }
   const save = loadSave(id);
@@ -57,22 +57,30 @@ function addSavedToComparator(id) {
     level:   save.level,
     gen:     save.gen,
   });
-  const navCompare = document.querySelectorAll('.nav-item')[2];
-  showPage('compare', navCompare);
-  setCmpMode('pokemon');
+  updateCompareBadge();
+  showToast('✓ ' + save.name + ' — ' + compareSlots.length + '/4');
 }
 
 function addCurrentToComparator() {
   if (compareSlots.length >= 4) {
-    const statusEl = document.getElementById('cmp-add-status');
-    if (statusEl) { statusEl.textContent = t('compare.maxslots'); setTimeout(() => { statusEl.textContent = ''; }, 2000); }
+    showToast('⚠ ' + t('compare.maxslots'));
     return;
   }
   addCompareSlot();
-  // Navigate to compare tab in pokemon mode
-  const navCompare = document.querySelectorAll('.nav-item')[2];
-  showPage('compare', navCompare);
-  setCmpMode('pokemon');
+  updateCompareBadge();
+  const name = compareSlots[compareSlots.length - 1]?.pokemon || '?';
+  showToast('✓ ' + name + ' — ' + compareSlots.length + '/4');
+}
+
+function updateCompareBadge() {
+  const badge = document.getElementById('compare-badge');
+  if (!badge) return;
+  if (compareSlots.length > 0) {
+    badge.textContent = compareSlots.length;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
 }
 
 function setCmpMode(mode) {

@@ -15,6 +15,8 @@ registerLocale('pt', {
   'section.saved':       'BUILDS SALVAS',
   'summary.finalstats':  'STATS FINAIS',
   'summary.evdist':      'Distribuição de EVs',
+  'compare.modebuild':   'EV / NATUREZA',
+  'compare.modepokemon': 'MULTI POKÉMON',
   'compare.maxslots':    'Máximo 4 Pokémon',
   'compare.empty':       'Sem Pokémon adicionados. Clique "+ ADICIONAR" após calcular.',
 

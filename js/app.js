@@ -6,6 +6,15 @@
 // State is declared in data.js
 let _initSilent = false; // suppress result panel during startup
 
+function showToast(msg, duration = 2500) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => el.classList.remove('show'), duration);
+}
+
 function calculate(scroll = false, silent = false) {
   const level = state.level;
   const gen = state.gen;
