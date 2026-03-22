@@ -16,6 +16,7 @@ registerLocale('es', {
   'section.naturechart': 'TABLA DE NATURALEZAS',
   'section.compare':     'COMPARAR BUILDS',
   'section.results':     'ESTADÍSTICAS CALCULADAS',
+  'section.saved':       'BUILDS GUARDADOS',
 
   // ── Labels ────────────────────────────────────────
   'label.search':      'BUSCAR POKÉMON',
@@ -39,11 +40,13 @@ registerLocale('es', {
   // ── Buttons ───────────────────────────────────────
   'btn.calculate': '▶ CALCULAR STATS',
   'btn.compare':   '▶ COMPARAR',
+  'btn.save':      '⭐ GUARDAR BUILD',
 
   // ── Navigation ────────────────────────────────────
   'nav.calc':    'CALC',
   'nav.formula': 'FÓRMULA',
   'nav.compare': 'COMPARAR',
+  'nav.saved':   'GUARDADOS',
 
   // ── Info boxes ────────────────────────────────────
   'info.formulas': 'Gen III–IX usa dos fórmulas según el tipo de estadística.',
@@ -68,6 +71,12 @@ registerLocale('es', {
   'gen.2': 'Gen II (GSC)',
   'gen.3': 'Gen III–V',
   'gen.6': 'Gen VI+ (Actual)',
+
+  // ── Saved builds ──────────────────────────────────
+  'saved.empty':  'Ninguna build guardada. Pulsa ⭐ tras calcular.',
+  'saved.load':   'CARGAR',
+  'saved.delete': 'ELIMINAR',
+  'saved.noevs':  'Sin EVs',
 
   // ── Status messages ───────────────────────────────
   'nature.nomods':    'sin cambio de stat',

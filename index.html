@@ -189,8 +189,11 @@
     </div>
 
     <!-- Calculate Button -->
-    <button class="btn btn-primary glow" onclick="calculate(true)" style="margin-bottom:16px">
+    <button class="btn btn-primary glow" onclick="calculate(true)" style="margin-bottom:8px">
       <span data-i18n="btn.calculate">▶ CALCULATE STATS</span>
+    </button>
+    <button class="btn btn-secondary" onclick="saveCurrentBuild()" style="margin-bottom:16px">
+      <span data-i18n="btn.save">⭐ SAVE BUILD</span>
     </button>
 
     <!-- Results -->
@@ -327,6 +330,19 @@
     </div>
   </div>
 
+  <!-- ═══════════════ PAGE: SAVED BUILDS ════════════ -->
+  <div class="page" id="page-saved">
+    <div class="card fade-in">
+      <div class="card-header">
+        <div class="card-dot"></div>
+        <div class="card-title" data-i18n="section.saved">SAVED BUILDS</div>
+      </div>
+      <div class="card-body">
+        <div id="saved-list"></div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /app -->
 
 <!-- Bottom Nav -->
@@ -343,6 +359,10 @@
     <span class="nav-icon">⚖️</span>
     <span class="nav-label" data-i18n="nav.compare">COMPARE</span>
   </div>
+  <div class="nav-item" onclick="showPage('saved',this)">
+    <span class="nav-icon">⭐</span>
+    <span class="nav-label" data-i18n="nav.saved">SAVED</span>
+  </div>
 </nav>
 
   <!-- JS modules — load order matters -->
@@ -353,6 +373,7 @@
   <script src="locales/en.js"></script>
   <script src="locales/es.js"></script>
   <script src="js/storage.js"></script>
+  <script src="js/saves.js"></script>
   <script src="js/ui.js"></script>
   <script src="js/pokemon.js"></script>
   <script src="js/app.js"></script>

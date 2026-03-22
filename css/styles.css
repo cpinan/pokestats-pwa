@@ -825,4 +825,93 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .ev-row { grid-template-columns: 44px 1fr 44px; }
 }
 
+/* ─── SAVE BUILD BUTTON ──────────────────────────────── */
+.btn-secondary {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius2);
+  background: transparent;
+  color: var(--accent);
+  font-family: var(--pixel);
+  font-size: clamp(8px, 1.8vw, 10px);
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease;
+}
+.btn-secondary:hover { background: var(--accent); color: var(--bg); }
+
+/* ─── SAVED BUILDS PAGE ──────────────────────────────── */
+.saved-empty {
+  font-family: var(--pixel);
+  font-size: clamp(7px, 1.6vw, 9px);
+  color: var(--text3);
+  text-align: center;
+  padding: 24px 0;
+  line-height: 2;
+}
+
+.saved-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  padding: 12px;
+  margin-bottom: 10px;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.saved-card.deleting {
+  opacity: 0;
+  transform: translateX(60px);
+}
+
+.saved-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.saved-card-name {
+  font-family: var(--pixel);
+  font-size: clamp(8px, 1.8vw, 10px);
+  color: var(--text);
+}
+.saved-card-num {
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.4vw, 8px);
+  color: var(--text3);
+}
+.saved-card-meta {
+  display: flex;
+  gap: 10px;
+  font-family: var(--body);
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+.saved-card-evs {
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.3vw, 7px);
+  color: var(--accent);
+  margin-bottom: 10px;
+  line-height: 1.8;
+  word-break: break-word;
+}
+.saved-card-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-saved-load, .btn-saved-delete {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: var(--radius);
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.4vw, 8px);
+  cursor: pointer;
+  border: none;
+  transition: opacity 150ms ease;
+}
+.btn-saved-load   { background: var(--red); color: #fff; }
+.btn-saved-delete { background: var(--bg4); color: var(--text3); border: 1px solid var(--border); }
+.btn-saved-load:hover   { opacity: 0.85; }
+.btn-saved-delete:hover { background: var(--border); color: var(--text); }
+
 

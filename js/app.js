@@ -124,7 +124,7 @@ function spreadEVs(...vals) {
 }
 
 function showPage(name, navEl) {
-  const tabs = ['calc', 'formula', 'compare'];
+  const tabs = ['calc', 'formula', 'compare', 'saved'];
   const prev = document.querySelector('.page.active')?.id.replace('page-', '');
   const dir  = tabs.indexOf(name) > tabs.indexOf(prev) ? 'slide-right' : 'slide-left';
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'slide-left', 'slide-right'));
@@ -133,6 +133,153 @@ function showPage(name, navEl) {
   navEl.classList.add('active');
   if (name === 'formula') buildNatureChart();
   if (name === 'compare') buildCompare();
+  if (name === 'saved')   renderSavedBuilds();
+}
+
+function saveCurrentBuild() {
+  const nameEl = document.getElementById('pokemon-name-display');
+  const numEl  = document.getElementById('pokedex-num');
+  const types  = Array.from(document.querySelectorAll('#type-badges .type-badge'))
+                      .map(b => b.textContent.toLowerCase());
+  const num = parseInt(numEl.textContent.replace('#', '')) || 0;
+  saveBuild({
+    name:   nameEl.textContent || '------',
+    num,
+    types,
+    hp:     state.hp,
+    bases:  [...state.bases],
+    nature: state.nature,
+    ivs:    [...state.ivs],
+    evs:    [...state.evs],
+    level:  state.level,
+    gen:    state.gen,
+  });
+  // Flash the button as feedback
+  const btn = document.querySelector('[onclick="saveCurrentBuild()"]');
+  if (btn) {
+    btn.style.background = 'var(--green)';
+    setTimeout(() => { btn.style.background = ''; }, 600);
+  }
+}
+
+function loadSaveIntoCalc(id) {
+  const save = loadSave(id);
+  if (!save) return;
+
+  // Restore state
+  state.hp     = save.hp;
+  state.bases  = [...save.bases];
+  state.nature = save.nature;
+  state.ivs    = [...save.ivs];
+  state.evs    = [...save.evs];
+  state.level  = save.level;
+  state.gen    = save.gen;
+
+  // Update gen select
+  document.getElementById('gen-select').value = save.gen;
+
+  // Update level
+  document.getElementById('level-range').value = save.level;
+  document.getElementById('level-num').value   = save.level;
+
+  // Update base stat inputs
+  document.getElementById('base-hp').value = save.hp;
+  save.bases.forEach((v, i) => {
+    const el = document.getElementById(`base-${i}`);
+    if (el) el.value = v;
+  });
+
+  // Rebuild IV/EV inputs for the saved gen
+  buildIVInputs();
+  buildEVInputs();
+
+  // Sync IV/EV values into rebuilt inputs
+  save.ivs.forEach((v, i) => {
+    const r = document.getElementById('iv-range-' + i);
+    const n = document.getElementById('iv-num-'   + i);
+    if (r) r.value = v;
+    if (n) n.value = v;
+  });
+  save.evs.forEach((v, i) => {
+    const r = document.getElementById('ev-range-' + i);
+    const n = document.getElementById('ev-num-'   + i);
+    if (r) r.value = v;
+    if (n) n.value = v;
+  });
+  updateEVTotal();
+
+  // Nature
+  selectNature(save.nature);
+
+  // Pokémon info
+  document.getElementById('pokedex-num').textContent = `#${String(save.num).padStart(3,'0')}`;
+  document.getElementById('pokemon-name-display').textContent = save.name;
+  const display = save.name.split('-').map(w => w.charAt(0).toUpperCase()+w.slice(1)).join('-');
+  document.getElementById('pokemon-input').value = display;
+  document.getElementById('search-clear').style.display = 'block';
+  updateTypeBadges(save.types);
+  if (save.num) loadSprite(save.num);
+
+  // Navigate to calc tab and calculate
+  const navCalc = document.querySelector('.nav-item');
+  showPage('calc', navCalc);
+  calculate(true);
+}
+
+function renderSavedBuilds() {
+  const container = document.getElementById('saved-list');
+  const saves = getSaves().slice().reverse(); // newest first
+
+  if (!saves.length) {
+    container.innerHTML = `
+      <div class="saved-empty" data-i18n="saved.empty">
+        No saved builds yet. Hit ⭐ after calculating.
+      </div>`;
+    return;
+  }
+
+  const allStatKeys = ['HP', ...STATS];
+
+  container.innerHTML = saves.map(s => {
+    const evSummary = s.evs
+      .map((v, i) => v > 0 ? `${allStatKeys[i]}:${v}` : null)
+      .filter(Boolean).join(' / ') || t('saved.noevs');
+    const natureName = tNature(NATURES[s.nature]?.name || 'Hardy');
+    const date = new Date(s.savedAt).toLocaleDateString();
+    return `
+      <div class="saved-card" id="saved-${s.id}">
+        <div class="saved-card-header">
+          <span class="saved-card-name">${s.name}</span>
+          <span class="saved-card-num">#${String(s.num).padStart(3,'0')}</span>
+        </div>
+        <div class="saved-card-meta">
+          <span>${natureName}</span>
+          <span>Lv ${s.level}</span>
+          <span>${date}</span>
+        </div>
+        <div class="saved-card-evs">${evSummary}</div>
+        <div class="saved-card-actions">
+          <button class="btn-saved-load" onclick="loadSaveIntoCalc('${s.id}')">
+            <span data-i18n="saved.load">LOAD</span>
+          </button>
+          <button class="btn-saved-delete" onclick="deleteSaveAnimated('${s.id}')">
+            <span data-i18n="saved.delete">DELETE</span>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+  // Apply translations to newly rendered elements
+  applyTranslations();
+}
+
+function deleteSaveAnimated(id) {
+  const card = document.getElementById('saved-' + id);
+  if (!card) return;
+  card.classList.add('deleting');
+  card.addEventListener('transitionend', () => {
+    deleteSave(id);
+    renderSavedBuilds();
+  }, { once: true });
 }
 
 document.getElementById('gen-select').addEventListener('change', function() {
