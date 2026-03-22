@@ -16,3 +16,7 @@ Thumbs.db
 node_modules/
 dist/
 
+# Claude Code — local instructions (not for version control)
+CLAUDE.md
+ROADMAP.md
+
