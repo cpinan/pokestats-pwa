@@ -63,6 +63,8 @@ let state = {
   gen: 3,
   hpIV: 31,
   hpEV: 0,
+  lastStats:   null,   // set by calculate() — array of 6 final values
+  currentName: '',     // set by calculate() — current Pokémon display name
 };
 
 let cmpEVsA = [0,0,0,0,0,0];

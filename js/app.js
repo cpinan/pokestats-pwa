@@ -28,6 +28,10 @@ function calculate(scroll = false, silent = false) {
   const allStats = [{ name:'HP', full:'HP', value:hp, mult:1.0, color:'#e84393' }, ...results];
   const total = allStats.reduce((a, s) => a + s.value, 0);
 
+  // Track for summary panel
+  state.lastStats   = allStats.map(s => s.value);
+  state.currentName = document.getElementById('pokemon-name-display').textContent || '------';
+
   if (!silent) {
     const rs = document.getElementById('result-section');
     rs.style.display = 'block';
@@ -71,6 +75,9 @@ function calculate(scroll = false, silent = false) {
 
   // Breakdown
   buildBreakdown(allStats, level, gen);
+
+  // Summary panel
+  if (!silent) renderSummaryPanel();
 
   if (scroll && !silent) document.getElementById('result-section').scrollIntoView({ behavior:'smooth', block:'start' });
 }

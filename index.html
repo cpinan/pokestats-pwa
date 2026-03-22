@@ -216,13 +216,24 @@
         <div id="cmp-add-status" style="font-family:var(--pixel);font-size:6px;color:var(--accent);text-align:center;min-height:14px;margin-top:4px"></div>
       </div>
 
-      <!-- EV Efficiency -->
+      <!-- Stat Breakdown -->
       <div class="card fade-in">
         <div class="card-header">
           <div class="card-dot"></div>
           <div class="card-title" data-i18n="section.breakdown">STAT BREAKDOWN</div>
         </div>
         <div class="card-body" id="breakdown-body">
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="card fade-in">
+        <div class="card-header">
+          <div class="card-dot"></div>
+          <div class="card-title" data-i18n="btn.summary">SUMMARY</div>
+        </div>
+        <div class="card-body">
+          <div id="summary-panel"></div>
         </div>
       </div>
     </div>
@@ -408,6 +419,7 @@
   <script src="js/ui.js"></script>
   <script src="js/pokemon.js"></script>
   <script src="js/compare.js"></script>
+  <script src="js/summary.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

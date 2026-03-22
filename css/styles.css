@@ -855,6 +855,50 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .nature-grid { grid-template-columns: repeat(8, 1fr); max-height: none; }
 }
 
+/* ─── SUMMARY PANEL ──────────────────────────────────── */
+.summary-text {
+  font-family: var(--pixel);
+  font-size: clamp(5.5px, 1.2vw, 7px);
+  color: var(--text2);
+  background: var(--bg4);
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  line-height: 2.2;
+  border: 1px solid var(--border);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+.ev-chart-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ev-chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.summary-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.btn-summary-action {
+  flex: 1;
+  padding: 10px;
+  border-radius: var(--radius);
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.4vw, 8px);
+  cursor: pointer;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text);
+  transition: background 150ms;
+}
+.btn-summary-action:hover { background: var(--border2); }
+
 /* ─── ADD TO COMPARE BUTTON ─────────────────────────── */
 .btn-add-compare {
   display: block;

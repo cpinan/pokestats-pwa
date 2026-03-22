@@ -17,6 +17,8 @@ registerLocale('en', {
   'section.compare':     'COMPARE BUILDS',
   'section.results':     'CALCULATED STATS',
   'section.saved':       'SAVED BUILDS',
+  'summary.finalstats': 'FINAL STATS',
+  'summary.evdist':     'EV Distribution',
   'compare.modebuild':   'BUILD A vs B',
   'compare.modepokemon': 'POKÉMON vs POKÉMON',
   'compare.maxslots':    'Max 4 Pokémon',
@@ -47,6 +49,9 @@ registerLocale('en', {
   'btn.save':        '⭐ SAVE BUILD',
   'btn.addcompare':  '+ ADD TO COMPARE',
   'btn.addpokemon':  '+ ADD CURRENT POKÉMON',
+  'btn.summary':     'SUMMARY',
+  'btn.share':       '📤 SHARE',
+  'btn.copytext':    '📋 COPY TEXT',
 
   // ── Navigation ────────────────────────────────────
   'nav.calc':    'CALC',
