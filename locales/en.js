@@ -17,6 +17,10 @@ registerLocale('en', {
   'section.compare':     'COMPARE BUILDS',
   'section.results':     'CALCULATED STATS',
   'section.saved':       'SAVED BUILDS',
+  'compare.modebuild':   'BUILD A vs B',
+  'compare.modepokemon': 'POKÉMON vs POKÉMON',
+  'compare.maxslots':    'Max 4 Pokémon',
+  'compare.empty':       'No Pokémon added yet. Hit "+ ADD TO COMPARE" after calculating.',
 
   // ── Labels ────────────────────────────────────────
   'label.search':      'SEARCH POKÉMON',
@@ -40,7 +44,9 @@ registerLocale('en', {
   // ── Buttons ───────────────────────────────────────
   'btn.calculate': '▶ CALCULATE STATS',
   'btn.compare':   '▶ COMPARE',
-  'btn.save':      '⭐ SAVE BUILD',
+  'btn.save':        '⭐ SAVE BUILD',
+  'btn.addcompare':  '+ ADD TO COMPARE',
+  'btn.addpokemon':  '+ ADD CURRENT POKÉMON',
 
   // ── Navigation ────────────────────────────────────
   'nav.calc':    'CALC',
@@ -51,7 +57,8 @@ registerLocale('en', {
   // ── Info boxes ────────────────────────────────────
   'info.formulas': 'Gen III–IX uses two formulas depending on the stat type.',
   'info.gen12':    'In Gen I/II, IVs are called DVs and max at 15. EVs are Stat Exp and max at 65535. The formula uses √(StatExp).',
-  'info.compare':  'Quickly compare two different EV spreads or natures on the same Pokémon.',
+  'info.compare':   'Quickly compare two different EV spreads or natures on the same Pokémon.',
+  'info.addcompare':'Calculate a Pokémon then hit "+ ADD TO COMPARE" to add it here. Up to 4 slots.',
 
   // ── Quick-fill chips ──────────────────────────────
   'chip.perfect':    'Perfect (31)',

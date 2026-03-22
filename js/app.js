@@ -132,7 +132,7 @@ function showPage(name, navEl) {
   document.getElementById('page-' + name).classList.add('active', dir);
   navEl.classList.add('active');
   if (name === 'formula') buildNatureChart();
-  if (name === 'compare') buildCompare();
+  if (name === 'compare') { buildCompare(); renderComparatorGrid(); }
   if (name === 'saved')   renderSavedBuilds();
 }
 

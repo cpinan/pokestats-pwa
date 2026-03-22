@@ -17,6 +17,10 @@ registerLocale('es', {
   'section.compare':     'COMPARAR BUILDS',
   'section.results':     'ESTADÍSTICAS CALCULADAS',
   'section.saved':       'BUILDS GUARDADOS',
+  'compare.modebuild':   'BUILD A vs B',
+  'compare.modepokemon': 'POKÉMON vs POKÉMON',
+  'compare.maxslots':    'Máximo 4 Pokémon',
+  'compare.empty':       'Sin Pokémon agregados. Pulsa "+ AGREGAR A COMPARAR" tras calcular.',
 
   // ── Labels ────────────────────────────────────────
   'label.search':      'BUSCAR POKÉMON',
@@ -40,7 +44,9 @@ registerLocale('es', {
   // ── Buttons ───────────────────────────────────────
   'btn.calculate': '▶ CALCULAR STATS',
   'btn.compare':   '▶ COMPARAR',
-  'btn.save':      '⭐ GUARDAR BUILD',
+  'btn.save':        '⭐ GUARDAR BUILD',
+  'btn.addcompare':  '+ AGREGAR A COMPARAR',
+  'btn.addpokemon':  '+ AGREGAR POKÉMON ACTUAL',
 
   // ── Navigation ────────────────────────────────────
   'nav.calc':    'CALC',
@@ -51,7 +57,8 @@ registerLocale('es', {
   // ── Info boxes ────────────────────────────────────
   'info.formulas': 'Gen III–IX usa dos fórmulas según el tipo de estadística.',
   'info.gen12':    'En Gen I/II, los IVs se llaman DVs y tienen máximo 15. Los EVs son Exp. de Stat y tienen máximo 65535. La fórmula usa √(ExpStat).',
-  'info.compare':  'Compara rápidamente dos distribuciones de EVs o naturalezas en el mismo Pokémon.',
+  'info.compare':   'Compara rápidamente dos distribuciones de EVs o naturalezas en el mismo Pokémon.',
+  'info.addcompare':'Calcula un Pokémon y pulsa "+ AGREGAR A COMPARAR" para añadirlo. Hasta 4 slots.',
 
   // ── Quick-fill chips ──────────────────────────────
   'chip.perfect':    'Perfectos (31)',

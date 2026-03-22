@@ -855,6 +855,117 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   .nature-grid { grid-template-columns: repeat(8, 1fr); max-height: none; }
 }
 
+/* ─── ADD TO COMPARE BUTTON ─────────────────────────── */
+.btn-add-compare {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 9px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.4vw, 8px);
+  cursor: pointer;
+  transition: border-color 150ms, color 150ms;
+}
+.btn-add-compare:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── COMPARE MODE TOGGLE ────────────────────────────── */
+.cmp-mode-toggle {
+  display: flex;
+  margin-bottom: 12px;
+  border-radius: var(--radius2);
+  overflow: hidden;
+  border: 1px solid var(--border2);
+}
+.cmp-mode-btn {
+  flex: 1;
+  padding: 10px 8px;
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.3vw, 8px);
+  background: var(--bg2);
+  color: var(--text3);
+  border: none;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.cmp-mode-btn.active { background: var(--red); color: #fff; }
+.cmp-mode-btn:not(.active):hover { background: var(--bg3); color: var(--text); }
+
+/* ─── COMPARATOR SLOTS ───────────────────────────────── */
+.cmp-slot-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 6px;
+}
+.cmp-slot-info { flex: 1; min-width: 0; }
+.cmp-slot-name {
+  font-family: var(--pixel);
+  font-size: clamp(7px, 1.5vw, 9px);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cmp-slot-sub {
+  font-family: var(--body);
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.cmp-slot-remove {
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 4px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.cmp-slot-remove:hover { color: var(--red-light); }
+
+/* ─── COMPARATOR GRID ────────────────────────────────── */
+.cmp-grid {
+  display: grid;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-top: 12px;
+}
+.cmp-cell {
+  background: var(--bg2);
+  padding: 6px 4px;
+  text-align: center;
+  font-family: var(--pixel);
+  font-size: clamp(6px, 1.3vw, 8px);
+  color: var(--text);
+}
+.cmp-head {
+  background: var(--bg4);
+  color: var(--text2);
+  font-size: clamp(5px, 1.1vw, 7px);
+  word-break: break-word;
+}
+.cmp-stat-label {
+  text-align: left;
+  padding-left: 8px;
+  color: var(--text2);
+  background: var(--bg3);
+}
+.cmp-winner { color: #44ff44; background: rgba(68,255,68,0.08); }
+.cmp-bst-label { color: var(--accent); background: var(--bg3); }
+.cmp-bst-val   { color: var(--accent); }
+
 /* ─── SAVE BUILD BUTTON ──────────────────────────────── */
 .btn-secondary {
   width: 100%;
