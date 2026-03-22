@@ -12,9 +12,14 @@ Thumbs.db
 .idea/
 *.swp
 
-# Node (if you add a build step)
+# Node
 node_modules/
 dist/
+
+# Playwright
+test-results/
+playwright-report/
+tests/e2e/report/
 
 # Claude Code — local instructions (not for version control)
 CLAUDE.md
