@@ -351,6 +351,30 @@ describe('i18n — locale registry', () => {
     expect(locales).toContain('es');
   });
 
+  it('PT, FR, DE, IT locales are registered', () => {
+    const locales = getAvailableLocales();
+    expect(locales).toContain('pt');
+    expect(locales).toContain('fr');
+    expect(locales).toContain('de');
+    expect(locales).toContain('it');
+  });
+
+  it('PT locale has key translations', () => {
+    expect(TRANSLATIONS.pt?.['btn.calculate']).toBe('▶ CALCULAR STATS');
+  });
+
+  it('FR locale has key translations', () => {
+    expect(TRANSLATIONS.fr?.['btn.calculate']).toBe('▶ CALCULER LES STATS');
+  });
+
+  it('DE locale has key translations', () => {
+    expect(TRANSLATIONS.de?.['btn.calculate']).toBe('▶ STATS BERECHNEN');
+  });
+
+  it('IT locale has key translations', () => {
+    expect(TRANSLATIONS.it?.['btn.calculate']).toBe('▶ CALCOLA STATS');
+  });
+
   it('TRANSLATIONS.en has keys after locale load', () => {
     expect(Object.keys(TRANSLATIONS.en).length).toBeGreaterThan(50);
   });
