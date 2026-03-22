@@ -101,6 +101,16 @@ async function fetchAndApply(query) {
   status.style.color = 'var(--text3)';
   status.textContent = t('status.searching');
   try {
+    // Check IndexedDB cache first
+    const cached = await getCachedPokemon(query);
+    if (cached) {
+      applyPokeAPIData(cached);
+      status.style.color = '#44ff44';
+      status.textContent = `✓ ${cached.name.toUpperCase()} ${t('status.loaded')}`;
+      setTimeout(() => { status.textContent = ''; }, 2000);
+      return;
+    }
+
     // Use a CORS-safe proxy pattern: try direct first, then proxy
     let data = null;
     const directUrl = `https://pokeapi.co/api/v2/pokemon/${encodeURIComponent(query)}`;
@@ -115,6 +125,8 @@ async function fetchAndApply(query) {
       if (!res2.ok) throw new Error(`Not found: ${query}`);
       data = await res2.json();
     }
+    // Save to IndexedDB for offline use
+    savePokemon(data);
     applyPokeAPIData(data);
     status.style.color = '#44ff44';
     status.textContent = `✓ ${data.name.toUpperCase()} ${t('status.loaded')}`;

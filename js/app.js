@@ -331,6 +331,15 @@ function init() {
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
+
+  // Offline banner
+  const banner = document.getElementById('offline-banner');
+  function updateOnlineStatus() {
+    banner.style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
 }
 
 init();

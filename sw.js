@@ -4,7 +4,7 @@
 //  (/pokestats-pwa/) without any changes.
 // ─────────────────────────────────────────────────────────────────────────────
 
-const CACHE = 'pokestats-v7';
+const CACHE = 'pokestats-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const ASSETS = [
   './js/data.js',
   './js/formulas.js',
   './js/i18n.js',
+  './js/storage.js',
   './js/ui.js',
   './js/pokemon.js',
   './js/app.js',
