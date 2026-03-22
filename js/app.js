@@ -475,6 +475,11 @@ function init() {
   loadPreset('garchomp');
   _initSilent = false;
 
+  // On tablet+ always show results panel (sticky right column)
+  if (window.matchMedia('(min-width: 768px)').matches) {
+    document.getElementById('result-section').style.display = 'block';
+  }
+
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   }
