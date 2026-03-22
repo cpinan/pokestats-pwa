@@ -262,6 +262,9 @@ function renderSavedBuilds() {
           <button class="btn-saved-load" onclick="loadSaveIntoCalc('${s.id}')">
             <span data-i18n="saved.load">LOAD</span>
           </button>
+          <button class="btn-saved-compare" onclick="addSavedToComparator('${s.id}')">
+            <span data-i18n="saved.compare">COMPARE</span>
+          </button>
           <button class="btn-saved-delete" onclick="deleteSaveAnimated('${s.id}')">
             <span data-i18n="saved.delete">DELETE</span>
           </button>

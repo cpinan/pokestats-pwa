@@ -81,8 +81,9 @@ registerLocale('es', {
 
   // ── Saved builds ──────────────────────────────────
   'saved.empty':  'Ninguna build guardada. Pulsa ⭐ tras calcular.',
-  'saved.load':   'CARGAR',
-  'saved.delete': 'ELIMINAR',
+  'saved.load':    'CARGAR',
+  'saved.compare': 'COMPARAR',
+  'saved.delete':  'ELIMINAR',
   'saved.noevs':  'Sin EVs',
 
   // ── Status messages ───────────────────────────────

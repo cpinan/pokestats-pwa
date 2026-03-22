@@ -38,6 +38,30 @@ function calculateSlot(slot) {
   });
 }
 
+function addSavedToComparator(id) {
+  if (compareSlots.length >= 4) {
+    const statusEl = document.getElementById('cmp-add-status');
+    if (statusEl) { statusEl.textContent = t('compare.maxslots'); setTimeout(() => { statusEl.textContent = ''; }, 2000); }
+    return;
+  }
+  const save = loadSave(id);
+  if (!save) return;
+  compareSlots.push({
+    pokemon: save.name,
+    num:     save.num,
+    types:   save.types,
+    bases:   [save.hp, ...save.bases],
+    nature:  save.nature,
+    ivs:     [...save.ivs],
+    evs:     [...save.evs],
+    level:   save.level,
+    gen:     save.gen,
+  });
+  const navCompare = document.querySelectorAll('.nav-item')[2];
+  showPage('compare', navCompare);
+  setCmpMode('pokemon');
+}
+
 function addCurrentToComparator() {
   if (compareSlots.length >= 4) {
     const statusEl = document.getElementById('cmp-add-status');

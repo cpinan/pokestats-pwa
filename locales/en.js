@@ -81,8 +81,9 @@ registerLocale('en', {
 
   // ── Saved builds ──────────────────────────────────
   'saved.empty':  'No saved builds yet. Hit ⭐ after calculating.',
-  'saved.load':   'LOAD',
-  'saved.delete': 'DELETE',
+  'saved.load':    'LOAD',
+  'saved.compare': 'COMPARE',
+  'saved.delete':  'DELETE',
   'saved.noevs':  'No EVs',
 
   // ── Status messages ───────────────────────────────
