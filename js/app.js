@@ -150,6 +150,13 @@ function showPage(name, navEl) {
   if (name === 'formula') buildNatureChart();
   if (name === 'compare') { buildCompare(); renderComparatorGrid(); }
   if (name === 'saved')   renderSavedBuilds();
+  // Screen tracking
+  if (typeof gtag === 'function') {
+    gtag('event', 'page_view', {
+      page_title: name,
+      page_path: '/pokestats-pwa/' + name,
+    });
+  }
 }
 
 function saveCurrentBuild() {
@@ -511,6 +518,14 @@ function init() {
   window.addEventListener('online',  updateOnlineStatus);
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
+
+  // Track initial screen load
+  if (typeof gtag === 'function') {
+    gtag('event', 'page_view', {
+      page_title: 'calc',
+      page_path: '/pokestats-pwa/calc',
+    });
+  }
 }
 
 init();
