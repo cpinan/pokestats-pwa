@@ -24,5 +24,6 @@ tests/e2e/report/
 # Claude Code — local instructions (not for version control)
 CLAUDE.md
 ROADMAP.md
+SETUP.md
 .claude/settings.local.json
 
