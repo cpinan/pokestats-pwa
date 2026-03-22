@@ -1,0 +1,57 @@
+/* ─── ANIMATIONS ─────────────────────────────────────────────────────────────
+   Loaded after styles.css. Respects prefers-reduced-motion throughout.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* ─── TAB / PAGE TRANSITIONS ─────────────────────────────────────────────── */
+
+.page { display: none; opacity: 0; }
+
+.page.active {
+  display: block;
+  animation: slideIn 280ms cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
+}
+
+.page.slide-left  { animation-name: slideInLeft; }
+.page.slide-right { animation-name: slideInRight; }
+
+@keyframes slideIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ─── NATURE BUTTON POP ──────────────────────────────────────────────────── */
+
+.nature-btn { transition: background 150ms ease, transform 100ms ease; }
+.nature-btn:active { transform: scale(0.94); }
+
+.nature-btn.active { animation: naturePop 180ms cubic-bezier(0.34, 1.8, 0.64, 1); }
+
+@keyframes naturePop {
+  0%   { transform: scale(0.88); }
+  100% { transform: scale(1); }
+}
+
+/* ─── RESULTS CARD REVEAL ────────────────────────────────────────────────── */
+
+#result-section.revealed {
+  animation: resultReveal 400ms cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+@keyframes resultReveal {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

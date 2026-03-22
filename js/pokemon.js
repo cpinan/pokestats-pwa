@@ -202,8 +202,10 @@ function loadSpriteUrl(url) {
   const img = document.getElementById('pokemon-sprite');
   const ph  = document.getElementById('sprite-placeholder');
   if (!url) { img.style.display = 'none'; ph.style.display = 'block'; return; }
+  img.classList.remove('loaded');
   img.src = url;
   img.style.display = 'block';
   ph.style.display = 'none';
+  img.onload  = () => { requestAnimationFrame(() => img.classList.add('loaded')); };
   img.onerror = () => { img.style.display = 'none'; ph.style.display = 'block'; };
 }

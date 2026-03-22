@@ -19,4 +19,5 @@ dist/
 # Claude Code — local instructions (not for version control)
 CLAUDE.md
 ROADMAP.md
+.claude/settings.local.json
 

@@ -28,7 +28,12 @@ function calculate(scroll = false, silent = false) {
   const allStats = [{ name:'HP', full:'HP', value:hp, mult:1.0, color:'#e84393' }, ...results];
   const total = allStats.reduce((a, s) => a + s.value, 0);
 
-  if (!silent) document.getElementById('result-section').style.display = 'block';
+  if (!silent) {
+    const rs = document.getElementById('result-section');
+    rs.style.display = 'block';
+    rs.classList.remove('revealed');
+    requestAnimationFrame(() => requestAnimationFrame(() => rs.classList.add('revealed')));
+  }
 
   const genLabels = {1:'GEN I',2:'GEN II',3:'GEN III–V',6:'GEN VI+'};
   document.getElementById('result-gen').textContent = genLabels[gen] || 'GEN III';
@@ -36,6 +41,7 @@ function calculate(scroll = false, silent = false) {
   // Fill result grid
   const grid = document.getElementById('result-grid');
   grid.innerHTML = '';
+  const bars = [];
   allStats.forEach(s => {
     const maxVal = getMaxStat(s.name, level, gen);
     const pct = Math.min(100, Math.round((s.value / maxVal) * 100));
@@ -47,10 +53,18 @@ function calculate(scroll = false, silent = false) {
       <div class="stat-result-value ${cls}">${s.value}</div>
       <div class="stat-result-pct">${pct}% max</div>
       <div class="stat-bar-bg">
-        <div class="stat-bar-fill" style="width:${pct}%;background:${s.color}"></div>
+        <div class="stat-bar-fill" style="width:0%;background:${s.color}"></div>
       </div>
     `;
     grid.appendChild(cell);
+    bars.push({ el: cell.querySelector('.stat-bar-fill'), pct });
+  });
+
+  // Stagger stat bar animations
+  bars.forEach((b, i) => {
+    setTimeout(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => { b.el.style.width = b.pct + '%'; }));
+    }, i * 60);
   });
 
   document.getElementById('bst-value').textContent = total;
@@ -110,9 +124,12 @@ function spreadEVs(...vals) {
 }
 
 function showPage(name, navEl) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const tabs = ['calc', 'formula', 'compare'];
+  const prev = document.querySelector('.page.active')?.id.replace('page-', '');
+  const dir  = tabs.indexOf(name) > tabs.indexOf(prev) ? 'slide-right' : 'slide-left';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active', 'slide-left', 'slide-right'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('page-' + name).classList.add('active', dir);
   navEl.classList.add('active');
   if (name === 'formula') buildNatureChart();
   if (name === 'compare') buildCompare();
